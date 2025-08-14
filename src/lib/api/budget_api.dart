@@ -20,7 +20,6 @@ class BudgetApi {
     if (response.statusCode == 200) {
       return BudgetModel.fromJson(json.decode(response.body));
     } else {
-      print('${response.statusCode}');
       throw Exception('예산 가져오기 실패');
     }
   }
