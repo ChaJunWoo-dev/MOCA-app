@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:prob/model/hist_model.dart';
+import 'package:prob/model/consume_history_model.dart';
 
 class CalendarProvider extends ChangeNotifier {
   DateTime? _selectedDay;

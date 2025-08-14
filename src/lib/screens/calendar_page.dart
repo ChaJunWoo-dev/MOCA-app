@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prob/api/consume_hist.dart';
-import 'package:prob/model/hist_model.dart';
+import 'package:prob/model/consume_history_model.dart';
 import 'package:prob/provider/auth_provider.dart';
 import 'package:prob/provider/home_provider.dart';
 import 'package:prob/provider/main_page/calendar_provider.dart';

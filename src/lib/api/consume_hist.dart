@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:prob/model/hist_model.dart';
+import 'package:prob/model/consume_history_model.dart';
 import 'dart:convert';
 import 'package:prob/model/reqModel/add_consume_hist.dart';
 

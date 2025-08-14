@@ -12,6 +12,20 @@ class HistModel {
   final int chart;
   final int visible;
 
+  HistModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        receiver = json['receiver'],
+        date = json['date'],
+        amount = json['amount'],
+        installment = json['installment'],
+        card = (json['card']),
+        subId = json['sub_id'],
+        icon = json['icon'],
+        categoryName = json['name'],
+        color = json['color'],
+        chart = json['chart'],
+        visible = json['visible'];
+
   HistModel({
     required this.id,
     required this.receiver,
@@ -26,22 +40,4 @@ class HistModel {
     required this.chart,
     required this.visible,
   });
-
-  // JSON을 HistModel로 변환하는 생성자
-  factory HistModel.fromJson(Map<String, dynamic> json) {
-    return HistModel(
-      id: json['id'],
-      receiver: json['receiver'],
-      date: json['date'],
-      amount: json['amount'],
-      installment: json['installment'],
-      card: (json['card']),
-      subId: json['sub_id'],
-      icon: json['icon'],
-      categoryName: json['name'],
-      color: json['color'],
-      chart: json['chart'],
-      visible: json['visible'],
-    );
-  }
 }

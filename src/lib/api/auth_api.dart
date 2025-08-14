@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:prob/model/token_model.dart';
+import 'package:prob/model/auth_model.dart';
 
 class AuthApi {
   static String baseUrl = "http://localhost:8000";

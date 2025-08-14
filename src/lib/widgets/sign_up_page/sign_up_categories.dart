@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prob/api/category_api.dart';
 import 'package:prob/api/user_api.dart';
-import 'package:prob/model/all_cate_model.dart';
+import 'package:prob/model/all_category_model.dart';
 import 'package:prob/provider/signup/categories_provider.dart';
 import 'package:prob/provider/signup/signup_provider.dart';
 import 'package:prob/widgets/common/custom_alert.dart';

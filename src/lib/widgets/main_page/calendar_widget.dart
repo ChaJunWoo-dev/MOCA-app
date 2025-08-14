@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:prob/api/card_api.dart';
 import 'package:prob/api/category_api.dart';
 import 'package:prob/api/consume_hist.dart';
-import 'package:prob/model/hist_model.dart';
+import 'package:prob/model/consume_history_model.dart';
 import 'package:prob/model/reqModel/add_consume_hist.dart';
 import 'package:prob/provider/add_provider.dart';
 import 'package:prob/provider/card_provider.dart';

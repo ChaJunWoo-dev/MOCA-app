@@ -10,6 +10,7 @@ class CategoryProvider with ChangeNotifier {
 
   void setCategory(List<CategoriesModel> userCategory) {
     _userCategory = userCategory;
+
     notifyListeners();
   }
 
@@ -25,14 +26,9 @@ class CategoryProvider with ChangeNotifier {
   void toggleVisibile(int subId) {
     final index = userCategory.indexWhere((cat) => cat.subId == subId);
     if (index != -1) {
-      userCategory[index] = CategoriesModel(
-        subId: userCategory[index].subId,
-        name: userCategory[index].name,
-        icon: userCategory[index].icon,
-        color: userCategory[index].color,
-        chart: userCategory[index].chart,
-        visible: !userCategory[index].visible,
-      );
+      // userCategory[index] = userCategory[index].copyWith(
+      //   visible: !userCategory[index].visible,
+      // );
       sortCategoryByVisible();
       notifyListeners();
     }

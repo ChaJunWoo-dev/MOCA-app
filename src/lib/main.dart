@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:prob/provider/add_provider.dart';
 import 'package:prob/provider/barchart/chart_provider.dart';
 import 'package:prob/provider/card_provider.dart';
-import 'package:prob/provider/consume_provider.dart';
 import 'package:prob/provider/home_provider.dart';
 import 'package:prob/provider/loading_provider.dart';
 import 'package:prob/provider/main_page/calendar_provider.dart';
 import 'package:prob/provider/main_page/card_option_provider.dart';
 import 'package:prob/provider/signup/categories_provider.dart';
-import 'package:prob/screens/consumption_history.dart';
 import 'package:prob/screens/edit_category.dart';
 import 'package:prob/screens/home.dart';
 import 'package:prob/screens/sign_up_page.dart';
@@ -52,7 +50,6 @@ void main() async {
             ChangeNotifierProvider(create: (_) => ConsumeHistLoadingProvider()),
             ChangeNotifierProvider(create: (_) => ChartProvider()),
             ChangeNotifierProvider(create: (_) => AddProvider()),
-            ChangeNotifierProvider(create: (_) => ConsumeProvider()),
             ChangeNotifierProvider(create: (_) => CardOptionProvider()),
             ChangeNotifierProvider(create: (_) => HomeProvider()),
             ChangeNotifierProvider(create: (_) => CalendarProvider()),
@@ -69,8 +66,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        scaffoldBackgroundColor:
-            Colors.white, //const Color.fromARGB(202, 255, 255, 255),
+        scaffoldBackgroundColor: Colors.white,
         textTheme: const TextTheme(
           headlineLarge: TextStyle(
             color: Color(0xffFFEECC),
@@ -82,9 +78,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const StartPage(),
         '/home': (context) => const Home(),
-        // '/home/calendar_month': (context) => const CalendarPage(),
-        // '/home/chart_month': (context) => const Chart(),
-        // '/history': (context) => const ConsumptionHistory(),
         '/my_page/category.edit': (context) => const EditCategory(),
         '/join_first': (context) => const SignUpPage1(),
         '/join_second': (context) => const SignUpPage2(),
