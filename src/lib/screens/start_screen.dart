@@ -59,6 +59,7 @@ class StartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   AppButton(
+                    width: double.infinity,
                     onPressed: () => Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

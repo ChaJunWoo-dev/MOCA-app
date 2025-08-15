@@ -13,6 +13,7 @@ migrate_working_dir/
 *.h
 *.cmake
 *.swift
+*.g.dart
 
 # IntelliJ related
 *.iml

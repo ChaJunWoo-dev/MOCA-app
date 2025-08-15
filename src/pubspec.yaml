@@ -37,7 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.6
   provider: ^6.1.2
   fl_chart: ^0.68.0
-  sqflite: ^2.3.3+1
   path: ^1.8.0
   http: ^1.2.2
   intl: ^0.19.0
@@ -47,7 +46,7 @@ dependencies:
   animated_snack_bar: ^0.4.0
   money_formatter: ^0.0.6
   wolt_modal_sheet: ^0.9.3
-  mobkit_calendar: ^1.0.1
+  mobkit_calendar: ^1.1.0
   unixtime: ^1.0.0
   dropdown_button2: ^2.3.9
   percent_indicator: ^4.2.3
@@ -55,8 +54,16 @@ dependencies:
   uuid: ^4.5.1
   awesome_number_picker: ^0.0.4
   flutter_svg: ^2.0.0
+  persistent_bottom_nav_bar: ^6.2.1
+  drift: ^2.28.1
+  drift_flutter: ^0.2.5
+  path_provider: ^2.1.5
+  top_snackbar_flutter: ^3.3.0
 
 dev_dependencies:
+  drift_dev: ^2.28.1
+  build_runner: ^2.6.0
+
   flutter_test:
     sdk: flutter
 
@@ -80,26 +87,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/images/logo.png
-      - assets/images/logout.png
-      - assets/images/calendar.png
-      - assets/images/clap.png
-      - assets/images/graph.png
-      - assets/images/pre_button.png
-      - assets/images/default_profile.svg
+      - assets/images/
       - assets/images/icons/
-      # - assets/images/icons/book.svg
-      # - assets/images/icons/gift.svg
-      # - assets/images/icons/happy.svg
-      # - assets/images/icons/health.svg
-      # - assets/images/icons/home.svg
-      # - assets/images/icons/movie.svg
-      # - assets/images/icons/pig.svg
-      # - assets/images/icons/shopping.svg
-      # - assets/images/icons/subway.svg
-      # - assets/images/icons/suitcase.svg
-
-      
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
