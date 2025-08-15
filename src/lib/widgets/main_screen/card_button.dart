@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class CardButton extends StatelessWidget {
   final String title, subtitle;
@@ -17,11 +18,11 @@ class CardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        PersistentNavBarNavigator.pushNewScreen(
           context,
-          MaterialPageRoute(
-            builder: (context) => routeWidget,
-          ),
+          screen: routeWidget,
+          withNavBar: true,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
       },
       child: Container(

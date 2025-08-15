@@ -1,98 +1,190 @@
 import 'package:flutter/material.dart';
+import 'package:prob/model/expense.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:prob/widgets/calendar_screen/utils.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
-
-  static const preButton = 'assets/images/pre_button.png';
-  static const calendarImage = 'assets/images/calendar.png';
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  late final ValueNotifier<List<Expense>> _selectedEvents;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
+  late DateTime firstDay;
+  late DateTime lastDay;
+
   @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-          child: CalendarHeader(
-              preButton: CalendarScreen.preButton,
-              calendarImage: CalendarScreen.calendarImage),
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 23),
-        //   child: FutureBuilder<Map<String, List<HistModel>>>(
-        //     future: getConsumeHist(token),
-        //     builder: (context, snapshot) {
-        //       if (snapshot.connectionState == ConnectionState.waiting) {
-        //         return const Center(
-        //           child: CircularProgressIndicator(),
-        //         );
-        //       } else if (snapshot.hasError) {
-        //         // print(snapshot.error);
-        //         return const Center(
-        //           child: Text('데이터를 불러오는 동안 오류가 발생했습니다.'),
-        //         );
-        //       } else if (snapshot.hasData) {
-        //         // calendarProvider.refresh(snapshot.data!);
-        //         return CalendarWidget(
-        //           consumeHist: snapshot.data!,
-        //           onRefresh: _refreshData,
-        //         );
-        //       } else {
-        //         return CalendarWidget(
-        //           consumeHist: const {},
-        //           onRefresh: _refreshData,
-        //         );
-        //       }
-        //     },
-        //   ),
-        // ),
-      ],
+  void initState() {
+    super.initState();
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+  }
+
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
+  List<DateTime> daysInRange(DateTime first, DateTime last) {
+    final dayCount = last.difference(first).inDays + 1;
+    return List.generate(
+      dayCount,
+      (index) => DateTime.utc(first.year, first.month, first.day + index),
     );
   }
-}
 
-class CalendarHeader extends StatelessWidget {
-  const CalendarHeader({
-    super.key,
-    required this.preButton,
-    required this.calendarImage,
-  });
+  List<Expense> _getEventsForDay(DateTime day) {
+    return kEvents[day] ?? const <Expense>[];
+  }
 
-  final String preButton;
-  final String calendarImage;
+  List<Expense> _getEventsForRange(DateTime start, DateTime end) {
+    final days = daysInRange(start, end);
+
+    return [
+      for (final d in days) ..._getEventsForDay(d),
+    ];
+  }
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+        _rangeStart = null;
+        _rangeEnd = null;
+        _rangeSelectionMode = RangeSelectionMode.toggledOff;
+      });
+
+      _selectedEvents.value = _getEventsForDay(selectedDay);
+    }
+  }
+
+  void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
+    setState(() {
+      _selectedDay = null;
+      _focusedDay = focusedDay;
+      _rangeStart = start;
+      _rangeEnd = end;
+      _rangeSelectionMode = RangeSelectionMode.toggledOn;
+    });
+
+    if (start != null && end != null) {
+      _selectedEvents.value = _getEventsForRange(start, end);
+    } else if (start != null) {
+      _selectedEvents.value = _getEventsForDay(start);
+    } else if (end != null) {
+      _selectedEvents.value = _getEventsForDay(end);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        TextButton(
-          onPressed: () {},
-          child: SizedBox(
-            width: 24,
-            child: Transform.translate(
-              offset: const Offset(0, -10),
-              child: Image.asset(preButton),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('지출 관리'),
+        elevation: 1,
+        backgroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
+          TableCalendar<Expense>(
+            locale: 'ko_KR',
+            availableCalendarFormats: const {
+              CalendarFormat.month: '월',
+              CalendarFormat.twoWeeks: '2주',
+              CalendarFormat.week: '주',
+            },
+            daysOfWeekHeight: 30,
+            firstDay: kFirstDay,
+            lastDay: kLastDay,
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            rangeStartDay: _rangeStart,
+            rangeEndDay: _rangeEnd,
+            calendarFormat: _calendarFormat,
+            rangeSelectionMode: _rangeSelectionMode,
+            eventLoader: _getEventsForDay,
+            startingDayOfWeek: StartingDayOfWeek.sunday,
+            headerStyle: HeaderStyle(
+              formatButtonDecoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey,
+                ),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(8),
+                ),
+              ),
+            ),
+            calendarStyle: const CalendarStyle(
+              outsideDaysVisible: false,
+              todayTextStyle: TextStyle(
+                color: Color(0xFF4CAF93),
+                fontWeight: FontWeight.bold,
+              ),
+              todayDecoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Color(0xFF4CAF93),
+                shape: BoxShape.circle,
+              ),
+              markerDecoration: BoxDecoration(
+                color: Color(0xFF2B6E63),
+                shape: BoxShape.circle,
+              ),
+            ),
+            onDaySelected: _onDaySelected,
+            onRangeSelected: _onRangeSelected,
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              _focusedDay = focusedDay;
+            },
+          ),
+          const SizedBox(height: 8.0),
+          Expanded(
+            child: ValueListenableBuilder<List<Expense>>(
+              valueListenable: _selectedEvents,
+              builder: (context, value, _) {
+                return ListView.builder(
+                  itemCount: value.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        onTap: () => print('${value[index]}'),
+                        title: Text('${value[index]}'),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
-        ),
-        Transform.scale(
-          scale: 4,
-          child: Transform.rotate(
-            angle: 0.2,
-            child: Image.asset(
-              calendarImage,
-              width: 30,
-            ),
-          ),
-        ),
-        const SizedBox(width: 24)
-      ],
+        ],
+      ),
     );
   }
 }
