@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prob/model/expense.dart';
+import 'package:prob/model/expense_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:prob/widgets/calendar_screen/utils.dart';
 
@@ -11,7 +11,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  late final ValueNotifier<List<Expense>> _selectedEvents;
+  late final ValueNotifier<List<ExpenseModel>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   DateTime _focusedDay = DateTime.now();
@@ -42,11 +42,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  List<Expense> _getEventsForDay(DateTime day) {
-    return kEvents[day] ?? const <Expense>[];
+  List<ExpenseModel> _getEventsForDay(DateTime day) {
+    return kEvents[day] ?? const <ExpenseModel>[];
   }
 
-  List<Expense> _getEventsForRange(DateTime start, DateTime end) {
+  List<ExpenseModel> _getEventsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
 
     return [
@@ -96,7 +96,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
       body: Column(
         children: [
-          TableCalendar<Expense>(
+          TableCalendar<ExpenseModel>(
             locale: 'ko_KR',
             availableCalendarFormats: const {
               CalendarFormat.month: '월',
@@ -158,7 +158,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Expense>>(
+            child: ValueListenableBuilder<List<ExpenseModel>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
                 return ListView.builder(

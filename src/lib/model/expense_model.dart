@@ -1,4 +1,4 @@
-class Expense {
+class ExpenseModel {
   final int id;
   final DateTime date;
   final int amount;
@@ -7,7 +7,7 @@ class Expense {
   final String? memo;
   final String? account;
 
-  const Expense({
+  const ExpenseModel({
     required this.id,
     required this.date,
     required this.amount,
@@ -17,7 +17,7 @@ class Expense {
     this.account,
   });
 
-  Expense.fromMap(Map<String, dynamic> map)
+  ExpenseModel.fromMap(Map<String, dynamic> map)
       : id = map['id'] as int,
         date = DateTime.parse(map['date'] as String),
         amount = map['amount'] as int,

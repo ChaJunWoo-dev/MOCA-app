@@ -1,17 +1,17 @@
 import 'dart:collection';
 
-import 'package:prob/model/expense.dart';
+import 'package:prob/model/expense_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-final kEvents = LinkedHashMap<DateTime, List<Expense>>(
+final kEvents = LinkedHashMap<DateTime, List<ExpenseModel>>(
   equals: isSameDay,
   hashCode: getHashCode,
 )..addAll(_kEventSource);
 
-final Map<DateTime, List<Expense>> _kEventSource = {}..addAll(
+final Map<DateTime, List<ExpenseModel>> _kEventSource = {}..addAll(
     {
       kToday: [
-        Expense(
+        ExpenseModel(
             id: 1,
             date: DateTime.now(),
             amount: 4500,
@@ -19,14 +19,14 @@ final Map<DateTime, List<Expense>> _kEventSource = {}..addAll(
             category: '카페',
             memo: 'ICE',
             account: '현대카드'),
-        Expense(
+        ExpenseModel(
             id: 2,
             date: DateTime.now(),
             amount: 8200,
             title: '점심-김치찌개',
             category: '식비',
             account: '카카오뱅크'),
-        Expense(
+        ExpenseModel(
             id: 3,
             date: DateTime.now(),
             amount: 1350,
