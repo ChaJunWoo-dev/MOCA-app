@@ -3,7 +3,12 @@ import 'package:prob/main_navigator.dart';
 import 'package:prob/widgets/common/button.dart';
 
 class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
+  final VoidCallback onCompleteOnboarding;
+
+  const StartScreen({
+    super.key,
+    required this.onCompleteOnboarding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +65,15 @@ class StartScreen extends StatelessWidget {
                 children: [
                   AppButton(
                     width: double.infinity,
-                    onPressed: () => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainNavigator(),
-                      ),
-                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainNavigator(),
+                        ),
+                      );
+                      onCompleteOnboarding();
+                    },
                     text: '시작하기',
                   ),
                 ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:prob/screens/main_screen.dart';
-import 'package:prob/screens/profile.dart';
 
 class MainNavigator extends StatelessWidget {
   const MainNavigator({super.key});
@@ -13,7 +12,7 @@ class MainNavigator extends StatelessWidget {
     controller = PersistentTabController(initialIndex: 0);
 
     List<Widget> buildScreens() {
-      return [const MainScreen(), const Profile()];
+      return [const MainScreen(), const MainScreen()];
     }
 
     List<PersistentBottomNavBarItem> navBarsItems() {
@@ -26,7 +25,7 @@ class MainNavigator extends StatelessWidget {
             initialRoute: "/main_screen",
             routes: {
               "/main_screen": (final context) => const MainScreen(),
-              "/profile": (final context) => const Profile(),
+              "/profile": (final context) => const MainScreen(),
             },
           ),
         ),
@@ -38,7 +37,7 @@ class MainNavigator extends StatelessWidget {
             initialRoute: "/",
             routes: {
               "/first": (final context) => const MainScreen(),
-              "/second": (final context) => const Profile(),
+              "/second": (final context) => const MainScreen(),
             },
           ),
         ),
