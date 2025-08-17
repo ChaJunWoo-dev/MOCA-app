@@ -20,7 +20,7 @@ class _DateTextState extends State<DateText> {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final threeMonthsAgo = DateTime(now.year, now.month - 3, now.day);
-    final threeMonthsLater = DateTime(now.year, now.month + 3, now.day);
+    final threeMonthsLater = DateTime(now.year, now.month, now.day);
 
     Future<void> onSelectDate() async {
       final DateTime? pickedDate = await showDatePicker(
