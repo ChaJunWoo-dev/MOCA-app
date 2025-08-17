@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
+import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -110,47 +111,7 @@ class _BudgetWidgetState extends State<BudgetWidget> {
                     )
                   ]),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade100),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('최근 3개월 평균 지출',
-                            style: TextStyle(fontSize: 13)),
-                        Text(
-                          "848,000원",
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 7),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('지난달 지출', style: TextStyle(fontSize: 13)),
-                        Text(
-                          "848,000원",
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _ExpenseSummaryCard(),
             const SizedBox(height: 18),
             AppButton(
               text: '예산 설정',
@@ -163,6 +124,59 @@ class _BudgetWidgetState extends State<BudgetWidget> {
           ],
         );
       },
+    );
+  }
+}
+
+class _ExpenseSummaryCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8), color: Colors.grey.shade100),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Column(
+          children: [
+            _SummaryRow(
+              title: '지난달 지출',
+              expenseTotal: 2000,
+            ),
+            SizedBox(height: 7),
+            _SummaryRow(
+              title: '최근 3개월 평균 지출',
+              expenseTotal: 8480,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final String title;
+  final int expenseTotal;
+
+  const _SummaryRow({
+    required this.title,
+    required this.expenseTotal,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: const TextStyle(fontSize: 13)),
+        Text(
+          "${money(expenseTotal)}원",
+          style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade600),
+        ),
+      ],
     );
   }
 }
