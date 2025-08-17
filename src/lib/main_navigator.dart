@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:prob/screens/add_expense_screen.dart';
-import 'package:prob/screens/add_fixed_expense_screen.dart';
 import 'package:prob/screens/main_screen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class MainNavigator extends StatelessWidget {
   const MainNavigator({super.key});
@@ -47,6 +48,28 @@ class MainNavigator extends StatelessWidget {
       ];
     }
 
+    return AddFloatingButton(
+      controller: controller,
+      buildScreens: buildScreens,
+      navBarsItems: navBarsItems,
+    );
+  }
+}
+
+class AddFloatingButton extends StatelessWidget {
+  final PersistentTabController controller;
+  final List<Widget> Function() buildScreens;
+  final List<PersistentBottomNavBarItem> Function() navBarsItems;
+
+  const AddFloatingButton({
+    super.key,
+    required this.controller,
+    required this.buildScreens,
+    required this.navBarsItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         PersistentTabView(
@@ -105,11 +128,9 @@ class MainNavigator extends StatelessWidget {
                 child: const Icon(Icons.receipt_long, color: Colors.white),
                 backgroundColor: const Color.fromARGB(255, 165, 139, 236),
                 label: '고정비',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddFixedExpenseScreen(),
-                  ),
+                onTap: () => showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.info(message: '준비 중인 기능이에요'),
                 ),
               ),
             ],
