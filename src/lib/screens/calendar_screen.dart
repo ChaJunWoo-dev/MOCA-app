@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/widgets/expense_list/expense_list_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:prob/widgets/calendar_screen/utils.dart';
 
@@ -158,29 +159,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<ExpenseModel>>(
-              valueListenable: _selectedEvents,
-              builder: (context, value, _) {
-                return ListView.builder(
-                  itemCount: value.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}'),
-                      ),
-                    );
-                  },
-                );
-              },
+            child: ExpenseListView(
+              monthDate: _focusedDay,
+              selectedDay: _selectedDay ?? _focusedDay,
             ),
           ),
         ],

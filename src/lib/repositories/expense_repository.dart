@@ -24,19 +24,19 @@ class ExpenseRepository {
         );
   }
 
-  Future<List<Expense>> getMonthlyExpenses(DateTime date) async {
-    final monthStart = DateTime(date.year, date.month, 1);
-    final nextMonthStart = DateTime(date.year, date.month + 1, 1);
+  Stream<List<Expense>> getMonthlyExpenses(DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end = DateTime(date.year, date.month + 1, 1);
 
     final query = db.select(db.expenses)
-      ..where((expenses) =>
-          expenses.date.isBiggerOrEqualValue(monthStart) &
-          expenses.date.isSmallerThanValue(nextMonthStart))
+      ..where((expense) =>
+          expense.date.isBiggerOrEqualValue(start) &
+          expense.date.isSmallerThanValue(end))
       ..orderBy([
-        (expenses) => OrderingTerm.desc(expenses.date),
-        (expenses) => OrderingTerm.desc(expenses.id)
+        (expense) => OrderingTerm.desc(expense.date),
+        (expense) => OrderingTerm.desc(expense.id),
       ]);
 
-    return query.get();
+    return query.watch();
   }
 }
