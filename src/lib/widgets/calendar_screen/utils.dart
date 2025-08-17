@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:prob/model/expense_model.dart';
+import 'package:prob/models/expense_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 final kEvents = LinkedHashMap<DateTime, List<ExpenseModel>>(
@@ -9,31 +9,7 @@ final kEvents = LinkedHashMap<DateTime, List<ExpenseModel>>(
 )..addAll(_kEventSource);
 
 final Map<DateTime, List<ExpenseModel>> _kEventSource = {}..addAll(
-    {
-      kToday: [
-        ExpenseModel(
-            id: 1,
-            date: DateTime.now(),
-            amount: 4500,
-            title: '아메리카노',
-            category: '카페',
-            memo: 'ICE',
-            account: '현대카드'),
-        ExpenseModel(
-            id: 2,
-            date: DateTime.now(),
-            amount: 8200,
-            title: '점심-김치찌개',
-            category: '식비',
-            account: '카카오뱅크'),
-        ExpenseModel(
-            id: 3,
-            date: DateTime.now(),
-            amount: 1350,
-            title: '버스',
-            category: '교통'),
-      ],
-    },
+    {},
   );
 
 int getHashCode(DateTime key) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prob/model/expense_model.dart';
+import 'package:prob/models/expense_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:prob/widgets/calendar_screen/utils.dart';
 

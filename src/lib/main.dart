@@ -3,6 +3,7 @@ import 'package:prob/main_navigator.dart';
 import 'package:prob/screens/start_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,9 +17,11 @@ void main() async {
 
   initializeDateFormatting().then(
     (_) => runApp(
-      MyApp(
-        isFirstRun: isFirstRun,
-        onCompleteOnboarding: onCompleteOnboarding,
+      ProviderScope(
+        child: MyApp(
+          isFirstRun: isFirstRun,
+          onCompleteOnboarding: onCompleteOnboarding,
+        ),
       ),
     ),
   );
@@ -50,6 +53,9 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w300,
             color: Colors.grey,
           ),
+        ),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF4CAF93),
         ),
       ),
       home: isFirstRun

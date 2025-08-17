@@ -4,24 +4,20 @@ final Map<String, Map<String, dynamic>> categoriesData = {
     'icon': 'utensils',
   },
   'cafe': {
-    'name': '카페',
+    'name': '카페/간식',
     'icon': 'mugHot',
   },
   'alcohol': {
-    'name': '술',
+    'name': '술/유흥',
     'icon': 'beerMugEmpty',
   },
   'cart': {
-    'name': '장바구니',
-    'icon': 'cartShopping',
+    'name': '생활',
+    'icon': 'boxOpen',
   },
   'online_cart': {
-    'name': '온라인 장바구니',
+    'name': '온라인쇼핑',
     'icon': 'bagShopping',
-  },
-  'daily': {
-    'name': '생필품',
-    'icon': 'boxOpen',
   },
   'fashion': {
     'name': '패션/쇼핑',
@@ -32,11 +28,15 @@ final Map<String, Map<String, dynamic>> categoriesData = {
     'icon': 'pumpSoap',
   },
   'bus': {
-    'name': '버스',
+    'name': '교통',
     'icon': 'bus',
   },
+  'car': {
+    'name': '자동차',
+    'icon': 'car',
+  },
   'house': {
-    'name': '집',
+    'name': '주거/통신',
     'icon': 'house',
   },
   'health': {
@@ -70,5 +70,9 @@ final Map<String, Map<String, dynamic>> categoriesData = {
   'gift': {
     'name': '경조/선물',
     'icon': 'gift',
+  },
+  'transfer': {
+    'name': '이체',
+    'icon': 'faRightLeft',
   },
 };

@@ -469,43 +469,35 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> month = GeneratedColumn<DateTime>(
-      'month', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<int> amount = GeneratedColumn<int>(
       'amount', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  static const VerificationMeta _vendorMeta = const VerificationMeta('vendor');
   @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> vendor = GeneratedColumn<String>(
+      'vendor', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _categorySlugMeta =
       const VerificationMeta('categorySlug');
   @override
   late final GeneratedColumn<String> categorySlug = GeneratedColumn<String>(
-      'category_slug', aliasedName, false,
+      'category_slug', aliasedName, true,
       type: DriftSqlType.string,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES categories (slug)'));
   static const VerificationMeta _memoMeta = const VerificationMeta('memo');
   @override
   late final GeneratedColumn<String> memo = GeneratedColumn<String>(
-      'memo', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _accountMeta =
-      const VerificationMeta('account');
-  @override
-  late final GeneratedColumn<String> account = GeneratedColumn<String>(
-      'account', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      'memo', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _updatedAtMeta =
       const VerificationMeta('updatedAt');
   @override
@@ -516,7 +508,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, month, amount, title, categorySlug, memo, account, updatedAt];
+      [id, date, amount, vendor, categorySlug, memo, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -530,9 +522,11 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('month')) {
+    if (data.containsKey('date')) {
       context.handle(
-          _monthMeta, month.isAcceptableOrUnknown(data['month']!, _monthMeta));
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
@@ -540,31 +534,19 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     } else if (isInserting) {
       context.missing(_amountMeta);
     }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
+    if (data.containsKey('vendor')) {
+      context.handle(_vendorMeta,
+          vendor.isAcceptableOrUnknown(data['vendor']!, _vendorMeta));
     }
     if (data.containsKey('category_slug')) {
       context.handle(
           _categorySlugMeta,
           categorySlug.isAcceptableOrUnknown(
               data['category_slug']!, _categorySlugMeta));
-    } else if (isInserting) {
-      context.missing(_categorySlugMeta);
     }
     if (data.containsKey('memo')) {
       context.handle(
           _memoMeta, memo.isAcceptableOrUnknown(data['memo']!, _memoMeta));
-    } else if (isInserting) {
-      context.missing(_memoMeta);
-    }
-    if (data.containsKey('account')) {
-      context.handle(_accountMeta,
-          account.isAcceptableOrUnknown(data['account']!, _accountMeta));
-    } else if (isInserting) {
-      context.missing(_accountMeta);
     }
     if (data.containsKey('updated_at')) {
       context.handle(_updatedAtMeta,
@@ -581,18 +563,16 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     return Expense(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      month: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}month'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       amount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      vendor: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}vendor']),
       categorySlug: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}category_slug'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}category_slug']),
       memo: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}memo'])!,
-      account: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}account'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}memo']),
       updatedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
@@ -606,32 +586,35 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
 
 class Expense extends DataClass implements Insertable<Expense> {
   final int id;
-  final DateTime month;
+  final DateTime date;
   final int amount;
-  final String title;
-  final String categorySlug;
-  final String memo;
-  final String account;
+  final String? vendor;
+  final String? categorySlug;
+  final String? memo;
   final DateTime updatedAt;
   const Expense(
       {required this.id,
-      required this.month,
+      required this.date,
       required this.amount,
-      required this.title,
-      required this.categorySlug,
-      required this.memo,
-      required this.account,
+      this.vendor,
+      this.categorySlug,
+      this.memo,
       required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['month'] = Variable<DateTime>(month);
+    map['date'] = Variable<DateTime>(date);
     map['amount'] = Variable<int>(amount);
-    map['title'] = Variable<String>(title);
-    map['category_slug'] = Variable<String>(categorySlug);
-    map['memo'] = Variable<String>(memo);
-    map['account'] = Variable<String>(account);
+    if (!nullToAbsent || vendor != null) {
+      map['vendor'] = Variable<String>(vendor);
+    }
+    if (!nullToAbsent || categorySlug != null) {
+      map['category_slug'] = Variable<String>(categorySlug);
+    }
+    if (!nullToAbsent || memo != null) {
+      map['memo'] = Variable<String>(memo);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -639,12 +622,14 @@ class Expense extends DataClass implements Insertable<Expense> {
   ExpensesCompanion toCompanion(bool nullToAbsent) {
     return ExpensesCompanion(
       id: Value(id),
-      month: Value(month),
+      date: Value(date),
       amount: Value(amount),
-      title: Value(title),
-      categorySlug: Value(categorySlug),
-      memo: Value(memo),
-      account: Value(account),
+      vendor:
+          vendor == null && nullToAbsent ? const Value.absent() : Value(vendor),
+      categorySlug: categorySlug == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categorySlug),
+      memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
       updatedAt: Value(updatedAt),
     );
   }
@@ -654,12 +639,11 @@ class Expense extends DataClass implements Insertable<Expense> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Expense(
       id: serializer.fromJson<int>(json['id']),
-      month: serializer.fromJson<DateTime>(json['month']),
+      date: serializer.fromJson<DateTime>(json['date']),
       amount: serializer.fromJson<int>(json['amount']),
-      title: serializer.fromJson<String>(json['title']),
-      categorySlug: serializer.fromJson<String>(json['categorySlug']),
-      memo: serializer.fromJson<String>(json['memo']),
-      account: serializer.fromJson<String>(json['account']),
+      vendor: serializer.fromJson<String?>(json['vendor']),
+      categorySlug: serializer.fromJson<String?>(json['categorySlug']),
+      memo: serializer.fromJson<String?>(json['memo']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -668,46 +652,43 @@ class Expense extends DataClass implements Insertable<Expense> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'month': serializer.toJson<DateTime>(month),
+      'date': serializer.toJson<DateTime>(date),
       'amount': serializer.toJson<int>(amount),
-      'title': serializer.toJson<String>(title),
-      'categorySlug': serializer.toJson<String>(categorySlug),
-      'memo': serializer.toJson<String>(memo),
-      'account': serializer.toJson<String>(account),
+      'vendor': serializer.toJson<String?>(vendor),
+      'categorySlug': serializer.toJson<String?>(categorySlug),
+      'memo': serializer.toJson<String?>(memo),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
   Expense copyWith(
           {int? id,
-          DateTime? month,
+          DateTime? date,
           int? amount,
-          String? title,
-          String? categorySlug,
-          String? memo,
-          String? account,
+          Value<String?> vendor = const Value.absent(),
+          Value<String?> categorySlug = const Value.absent(),
+          Value<String?> memo = const Value.absent(),
           DateTime? updatedAt}) =>
       Expense(
         id: id ?? this.id,
-        month: month ?? this.month,
+        date: date ?? this.date,
         amount: amount ?? this.amount,
-        title: title ?? this.title,
-        categorySlug: categorySlug ?? this.categorySlug,
-        memo: memo ?? this.memo,
-        account: account ?? this.account,
+        vendor: vendor.present ? vendor.value : this.vendor,
+        categorySlug:
+            categorySlug.present ? categorySlug.value : this.categorySlug,
+        memo: memo.present ? memo.value : this.memo,
         updatedAt: updatedAt ?? this.updatedAt,
       );
   Expense copyWithCompanion(ExpensesCompanion data) {
     return Expense(
       id: data.id.present ? data.id.value : this.id,
-      month: data.month.present ? data.month.value : this.month,
+      date: data.date.present ? data.date.value : this.date,
       amount: data.amount.present ? data.amount.value : this.amount,
-      title: data.title.present ? data.title.value : this.title,
+      vendor: data.vendor.present ? data.vendor.value : this.vendor,
       categorySlug: data.categorySlug.present
           ? data.categorySlug.value
           : this.categorySlug,
       memo: data.memo.present ? data.memo.value : this.memo,
-      account: data.account.present ? data.account.value : this.account,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -716,106 +697,94 @@ class Expense extends DataClass implements Insertable<Expense> {
   String toString() {
     return (StringBuffer('Expense(')
           ..write('id: $id, ')
-          ..write('month: $month, ')
+          ..write('date: $date, ')
           ..write('amount: $amount, ')
-          ..write('title: $title, ')
+          ..write('vendor: $vendor, ')
           ..write('categorySlug: $categorySlug, ')
           ..write('memo: $memo, ')
-          ..write('account: $account, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, month, amount, title, categorySlug, memo, account, updatedAt);
+  int get hashCode =>
+      Object.hash(id, date, amount, vendor, categorySlug, memo, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Expense &&
           other.id == this.id &&
-          other.month == this.month &&
+          other.date == this.date &&
           other.amount == this.amount &&
-          other.title == this.title &&
+          other.vendor == this.vendor &&
           other.categorySlug == this.categorySlug &&
           other.memo == this.memo &&
-          other.account == this.account &&
           other.updatedAt == this.updatedAt);
 }
 
 class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<int> id;
-  final Value<DateTime> month;
+  final Value<DateTime> date;
   final Value<int> amount;
-  final Value<String> title;
-  final Value<String> categorySlug;
-  final Value<String> memo;
-  final Value<String> account;
+  final Value<String?> vendor;
+  final Value<String?> categorySlug;
+  final Value<String?> memo;
   final Value<DateTime> updatedAt;
   const ExpensesCompanion({
     this.id = const Value.absent(),
-    this.month = const Value.absent(),
+    this.date = const Value.absent(),
     this.amount = const Value.absent(),
-    this.title = const Value.absent(),
+    this.vendor = const Value.absent(),
     this.categorySlug = const Value.absent(),
     this.memo = const Value.absent(),
-    this.account = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
   ExpensesCompanion.insert({
     this.id = const Value.absent(),
-    this.month = const Value.absent(),
+    required DateTime date,
     required int amount,
-    required String title,
-    required String categorySlug,
-    required String memo,
-    required String account,
+    this.vendor = const Value.absent(),
+    this.categorySlug = const Value.absent(),
+    this.memo = const Value.absent(),
     this.updatedAt = const Value.absent(),
-  })  : amount = Value(amount),
-        title = Value(title),
-        categorySlug = Value(categorySlug),
-        memo = Value(memo),
-        account = Value(account);
+  })  : date = Value(date),
+        amount = Value(amount);
   static Insertable<Expense> custom({
     Expression<int>? id,
-    Expression<DateTime>? month,
+    Expression<DateTime>? date,
     Expression<int>? amount,
-    Expression<String>? title,
+    Expression<String>? vendor,
     Expression<String>? categorySlug,
     Expression<String>? memo,
-    Expression<String>? account,
     Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (month != null) 'month': month,
+      if (date != null) 'date': date,
       if (amount != null) 'amount': amount,
-      if (title != null) 'title': title,
+      if (vendor != null) 'vendor': vendor,
       if (categorySlug != null) 'category_slug': categorySlug,
       if (memo != null) 'memo': memo,
-      if (account != null) 'account': account,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
   ExpensesCompanion copyWith(
       {Value<int>? id,
-      Value<DateTime>? month,
+      Value<DateTime>? date,
       Value<int>? amount,
-      Value<String>? title,
-      Value<String>? categorySlug,
-      Value<String>? memo,
-      Value<String>? account,
+      Value<String?>? vendor,
+      Value<String?>? categorySlug,
+      Value<String?>? memo,
       Value<DateTime>? updatedAt}) {
     return ExpensesCompanion(
       id: id ?? this.id,
-      month: month ?? this.month,
+      date: date ?? this.date,
       amount: amount ?? this.amount,
-      title: title ?? this.title,
+      vendor: vendor ?? this.vendor,
       categorySlug: categorySlug ?? this.categorySlug,
       memo: memo ?? this.memo,
-      account: account ?? this.account,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -826,23 +795,20 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (month.present) {
-      map['month'] = Variable<DateTime>(month.value);
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
     }
     if (amount.present) {
       map['amount'] = Variable<int>(amount.value);
     }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
+    if (vendor.present) {
+      map['vendor'] = Variable<String>(vendor.value);
     }
     if (categorySlug.present) {
       map['category_slug'] = Variable<String>(categorySlug.value);
     }
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
-    }
-    if (account.present) {
-      map['account'] = Variable<String>(account.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -854,12 +820,11 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   String toString() {
     return (StringBuffer('ExpensesCompanion(')
           ..write('id: $id, ')
-          ..write('month: $month, ')
+          ..write('date: $date, ')
           ..write('amount: $amount, ')
-          ..write('title: $title, ')
+          ..write('vendor: $vendor, ')
           ..write('categorySlug: $categorySlug, ')
           ..write('memo: $memo, ')
-          ..write('account: $account, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1240,22 +1205,20 @@ typedef $$CategoriesTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function({bool expensesRefs})>;
 typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
-  Value<DateTime> month,
+  required DateTime date,
   required int amount,
-  required String title,
-  required String categorySlug,
-  required String memo,
-  required String account,
+  Value<String?> vendor,
+  Value<String?> categorySlug,
+  Value<String?> memo,
   Value<DateTime> updatedAt,
 });
 typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
-  Value<DateTime> month,
+  Value<DateTime> date,
   Value<int> amount,
-  Value<String> title,
-  Value<String> categorySlug,
-  Value<String> memo,
-  Value<String> account,
+  Value<String?> vendor,
+  Value<String?> categorySlug,
+  Value<String?> memo,
   Value<DateTime> updatedAt,
 });
 
@@ -1267,9 +1230,9 @@ final class $$ExpensesTableReferences
       db.categories.createAlias(
           $_aliasNameGenerator(db.expenses.categorySlug, db.categories.slug));
 
-  $$CategoriesTableProcessedTableManager get categorySlug {
-    final $_column = $_itemColumn<String>('category_slug')!;
-
+  $$CategoriesTableProcessedTableManager? get categorySlug {
+    final $_column = $_itemColumn<String>('category_slug');
+    if ($_column == null) return null;
     final manager = $$CategoriesTableTableManager($_db, $_db.categories)
         .filter((f) => f.slug.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_categorySlugTable($_db));
@@ -1291,20 +1254,17 @@ class $$ExpensesTableFilterComposer
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get month => $composableBuilder(
-      column: $table.month, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get amount => $composableBuilder(
       column: $table.amount, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get vendor => $composableBuilder(
+      column: $table.vendor, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get memo => $composableBuilder(
       column: $table.memo, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get account => $composableBuilder(
-      column: $table.account, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnFilters(column));
@@ -1342,20 +1302,17 @@ class $$ExpensesTableOrderingComposer
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get month => $composableBuilder(
-      column: $table.month, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get amount => $composableBuilder(
       column: $table.amount, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get vendor => $composableBuilder(
+      column: $table.vendor, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get memo => $composableBuilder(
       column: $table.memo, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get account => $composableBuilder(
-      column: $table.account, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
@@ -1393,20 +1350,17 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get month =>
-      $composableBuilder(column: $table.month, builder: (column) => column);
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<int> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
 
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
+  GeneratedColumn<String> get vendor =>
+      $composableBuilder(column: $table.vendor, builder: (column) => column);
 
   GeneratedColumn<String> get memo =>
       $composableBuilder(column: $table.memo, builder: (column) => column);
-
-  GeneratedColumn<String> get account =>
-      $composableBuilder(column: $table.account, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -1456,42 +1410,38 @@ class $$ExpensesTableTableManager extends RootTableManager<
               $$ExpensesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            Value<DateTime> month = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
             Value<int> amount = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> categorySlug = const Value.absent(),
-            Value<String> memo = const Value.absent(),
-            Value<String> account = const Value.absent(),
+            Value<String?> vendor = const Value.absent(),
+            Value<String?> categorySlug = const Value.absent(),
+            Value<String?> memo = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               ExpensesCompanion(
             id: id,
-            month: month,
+            date: date,
             amount: amount,
-            title: title,
+            vendor: vendor,
             categorySlug: categorySlug,
             memo: memo,
-            account: account,
             updatedAt: updatedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            Value<DateTime> month = const Value.absent(),
+            required DateTime date,
             required int amount,
-            required String title,
-            required String categorySlug,
-            required String memo,
-            required String account,
+            Value<String?> vendor = const Value.absent(),
+            Value<String?> categorySlug = const Value.absent(),
+            Value<String?> memo = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               ExpensesCompanion.insert(
             id: id,
-            month: month,
+            date: date,
             amount: amount,
-            title: title,
+            vendor: vendor,
             categorySlug: categorySlug,
             memo: memo,
-            account: account,
             updatedAt: updatedAt,
           ),
           withReferenceMapper: (p0) => p0

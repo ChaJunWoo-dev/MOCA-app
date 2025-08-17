@@ -3,8 +3,8 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:prob/db/tables/budget_table.dart';
 import 'package:prob/db/tables/category_table.dart';
-import 'package:prob/db/tables/expense_table.dart';
 import 'package:prob/constants/categories_data.dart';
+import 'package:prob/db/tables/expense_table.dart';
 
 part 'database.g.dart';
 
@@ -12,6 +12,7 @@ part 'database.g.dart';
   tables: [
     Budgets,
     Categories,
+    Expenses,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -41,8 +42,8 @@ class AppDatabase extends _$AppDatabase {
             await into(categories).insert(
               CategoriesCompanion.insert(
                 slug: entry.key,
-                name: entry.value['name'] as String,
-                icon: entry.value['icon'].toString(),
+                name: entry.value['name'],
+                icon: entry.value['icon'],
               ),
             );
           }
