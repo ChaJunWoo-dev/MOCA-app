@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
+import 'package:prob/providers/expense/expense_read_provider.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -128,28 +129,42 @@ class _BudgetWidgetState extends State<BudgetWidget> {
   }
 }
 
-class _ExpenseSummaryCard extends StatelessWidget {
+class _ExpenseSummaryCard extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8), color: Colors.grey.shade100),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          children: [
-            _SummaryRow(
-              title: '지난달 지출',
-              expenseTotal: 2000,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final now = DateTime.now();
+    final monthKey = DateTime(now.year, now.month, 1);
+    final totals = ref.watch(total3MonthProvider(monthKey));
+
+    return totals.when(
+      loading: () => const CircularProgressIndicator(),
+      error: (err, stack) => const Center(child: Text('데이터를 가져오지 못했어요')),
+      data: (values) {
+        final lastMonth = values.first;
+        final avg3 = (values.reduce((a, b) => a + b) / values.length).round();
+
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade100),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              children: [
+                _SummaryRow(
+                  title: '지난달 지출',
+                  expenseTotal: lastMonth,
+                ),
+                const SizedBox(height: 7),
+                _SummaryRow(
+                  title: '최근 3개월 평균 지출',
+                  expenseTotal: avg3,
+                ),
+              ],
             ),
-            SizedBox(height: 7),
-            _SummaryRow(
-              title: '최근 3개월 평균 지출',
-              expenseTotal: 8480,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
