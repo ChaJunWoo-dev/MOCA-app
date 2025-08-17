@@ -56,6 +56,7 @@ class ExpenseListView extends ConsumerWidget {
           ),
           children: [
             for (var i = 0; i < visibleGroups.length; i++) ...[
+              const SizedBox(height: 25),
               DailySection(visibleGroups: visibleGroups, i: i),
             ],
           ],
