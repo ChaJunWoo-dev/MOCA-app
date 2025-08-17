@@ -482,8 +482,8 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   static const VerificationMeta _vendorMeta = const VerificationMeta('vendor');
   @override
   late final GeneratedColumn<String> vendor = GeneratedColumn<String>(
-      'vendor', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+      'vendor', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _categorySlugMeta =
       const VerificationMeta('categorySlug');
   @override
@@ -537,6 +537,8 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     if (data.containsKey('vendor')) {
       context.handle(_vendorMeta,
           vendor.isAcceptableOrUnknown(data['vendor']!, _vendorMeta));
+    } else if (isInserting) {
+      context.missing(_vendorMeta);
     }
     if (data.containsKey('category_slug')) {
       context.handle(
@@ -568,7 +570,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       amount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
       vendor: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}vendor']),
+          .read(DriftSqlType.string, data['${effectivePrefix}vendor'])!,
       categorySlug: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}category_slug']),
       memo: attachedDatabase.typeMapping
@@ -588,7 +590,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   final int id;
   final DateTime date;
   final int amount;
-  final String? vendor;
+  final String vendor;
   final String? categorySlug;
   final String? memo;
   final DateTime updatedAt;
@@ -596,7 +598,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       {required this.id,
       required this.date,
       required this.amount,
-      this.vendor,
+      required this.vendor,
       this.categorySlug,
       this.memo,
       required this.updatedAt});
@@ -606,9 +608,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['id'] = Variable<int>(id);
     map['date'] = Variable<DateTime>(date);
     map['amount'] = Variable<int>(amount);
-    if (!nullToAbsent || vendor != null) {
-      map['vendor'] = Variable<String>(vendor);
-    }
+    map['vendor'] = Variable<String>(vendor);
     if (!nullToAbsent || categorySlug != null) {
       map['category_slug'] = Variable<String>(categorySlug);
     }
@@ -624,8 +624,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       id: Value(id),
       date: Value(date),
       amount: Value(amount),
-      vendor:
-          vendor == null && nullToAbsent ? const Value.absent() : Value(vendor),
+      vendor: Value(vendor),
       categorySlug: categorySlug == null && nullToAbsent
           ? const Value.absent()
           : Value(categorySlug),
@@ -641,7 +640,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       id: serializer.fromJson<int>(json['id']),
       date: serializer.fromJson<DateTime>(json['date']),
       amount: serializer.fromJson<int>(json['amount']),
-      vendor: serializer.fromJson<String?>(json['vendor']),
+      vendor: serializer.fromJson<String>(json['vendor']),
       categorySlug: serializer.fromJson<String?>(json['categorySlug']),
       memo: serializer.fromJson<String?>(json['memo']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -654,7 +653,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       'id': serializer.toJson<int>(id),
       'date': serializer.toJson<DateTime>(date),
       'amount': serializer.toJson<int>(amount),
-      'vendor': serializer.toJson<String?>(vendor),
+      'vendor': serializer.toJson<String>(vendor),
       'categorySlug': serializer.toJson<String?>(categorySlug),
       'memo': serializer.toJson<String?>(memo),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -665,7 +664,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           {int? id,
           DateTime? date,
           int? amount,
-          Value<String?> vendor = const Value.absent(),
+          String? vendor,
           Value<String?> categorySlug = const Value.absent(),
           Value<String?> memo = const Value.absent(),
           DateTime? updatedAt}) =>
@@ -673,7 +672,7 @@ class Expense extends DataClass implements Insertable<Expense> {
         id: id ?? this.id,
         date: date ?? this.date,
         amount: amount ?? this.amount,
-        vendor: vendor.present ? vendor.value : this.vendor,
+        vendor: vendor ?? this.vendor,
         categorySlug:
             categorySlug.present ? categorySlug.value : this.categorySlug,
         memo: memo.present ? memo.value : this.memo,
@@ -727,7 +726,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<int> id;
   final Value<DateTime> date;
   final Value<int> amount;
-  final Value<String?> vendor;
+  final Value<String> vendor;
   final Value<String?> categorySlug;
   final Value<String?> memo;
   final Value<DateTime> updatedAt;
@@ -744,12 +743,13 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.id = const Value.absent(),
     required DateTime date,
     required int amount,
-    this.vendor = const Value.absent(),
+    required String vendor,
     this.categorySlug = const Value.absent(),
     this.memo = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : date = Value(date),
-        amount = Value(amount);
+        amount = Value(amount),
+        vendor = Value(vendor);
   static Insertable<Expense> custom({
     Expression<int>? id,
     Expression<DateTime>? date,
@@ -774,7 +774,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       {Value<int>? id,
       Value<DateTime>? date,
       Value<int>? amount,
-      Value<String?>? vendor,
+      Value<String>? vendor,
       Value<String?>? categorySlug,
       Value<String?>? memo,
       Value<DateTime>? updatedAt}) {
@@ -1207,7 +1207,7 @@ typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
   required DateTime date,
   required int amount,
-  Value<String?> vendor,
+  required String vendor,
   Value<String?> categorySlug,
   Value<String?> memo,
   Value<DateTime> updatedAt,
@@ -1216,7 +1216,7 @@ typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
   Value<DateTime> date,
   Value<int> amount,
-  Value<String?> vendor,
+  Value<String> vendor,
   Value<String?> categorySlug,
   Value<String?> memo,
   Value<DateTime> updatedAt,
@@ -1412,7 +1412,7 @@ class $$ExpensesTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<DateTime> date = const Value.absent(),
             Value<int> amount = const Value.absent(),
-            Value<String?> vendor = const Value.absent(),
+            Value<String> vendor = const Value.absent(),
             Value<String?> categorySlug = const Value.absent(),
             Value<String?> memo = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -1430,7 +1430,7 @@ class $$ExpensesTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             required DateTime date,
             required int amount,
-            Value<String?> vendor = const Value.absent(),
+            required String vendor,
             Value<String?> categorySlug = const Value.absent(),
             Value<String?> memo = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
