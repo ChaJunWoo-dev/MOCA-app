@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
-import 'package:prob/providers/expense/expense_provider.dart';
+import 'package:prob/providers/expense/expense_write_provider.dart';
 import 'package:prob/widgets/add_expense_screen/amount_input_field.dart';
 import 'package:prob/widgets/add_expense_screen/category_select_sheet.dart';
 import 'package:prob/widgets/add_expense_screen/date_text.dart';
@@ -54,7 +54,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
       return;
     }
 
-    final expenseNotifier = ref.read(expenseProvider.notifier);
+    final expenseNotifier = ref.read(expenseWriteProvider.notifier);
 
     await expenseNotifier.save(
       ExpensesCompanion(
