@@ -26,7 +26,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
   Category? selectedCategory;
   DateTime selectedDate = DateTime.now();
   final amountCtrl = TextEditingController(text: '0원');
-  final titleCtrl = TextEditingController();
+  final vendorCtrl = TextEditingController();
   final memoCtrl = TextEditingController();
 
   void _onTypeChanged(String newType) {
@@ -54,13 +54,22 @@ class _State extends ConsumerState<AddExpenseScreen> {
       return;
     }
 
+    if (vendorCtrl.text.trim() == '') {
+      showTopSnackBar(
+        Overlay.of(context),
+        const CustomSnackBar.error(message: '거래처 명을 입력하세요'),
+      );
+
+      return;
+    }
+
     final expenseNotifier = ref.read(expenseWriteProvider.notifier);
 
     await expenseNotifier.save(
       ExpensesCompanion(
         date: Value(selectedDate),
         amount: Value(amount),
-        vendor: Value(titleCtrl.text),
+        vendor: Value(vendorCtrl.text),
         categorySlug: Value(selectedCategory?.slug),
         memo: Value(memoCtrl.text),
       ),
@@ -139,7 +148,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
                     title: '거래처',
                     widget: ExpenseTextField(
                       placeholderText: '입력하세요',
-                      controller: titleCtrl,
+                      controller: vendorCtrl,
                     ),
                     showIcon: false,
                   ),

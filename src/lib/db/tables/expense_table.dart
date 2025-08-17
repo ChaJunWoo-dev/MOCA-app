@@ -11,7 +11,7 @@ class Expenses extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get date => dateTime()();
   IntColumn get amount => integer()();
-  TextColumn get vendor => text().nullable()();
+  TextColumn get vendor => text()();
   TextColumn get categorySlug =>
       text().nullable().references(Categories, #slug)();
   TextColumn get memo => text().nullable()();

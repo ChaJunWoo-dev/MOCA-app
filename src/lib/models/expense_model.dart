@@ -2,7 +2,7 @@ class ExpenseModel {
   final int id;
   final DateTime date;
   final int amount;
-  final String? vendor;
+  final String vendor;
   final String? categorySlug;
   final String? memo;
 
@@ -19,7 +19,7 @@ class ExpenseModel {
       : id = map['id'] as int,
         date = DateTime.parse(map['date'] as String),
         amount = map['amount'] as int,
-        vendor = map['vendor'] as String?,
+        vendor = map['vendor'] as String,
         categorySlug = map['categorySlug'] as String?,
         memo = map['memo'] as String?;
 }
