@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:prob/screens/add_expense_screen.dart';
+import 'package:prob/screens/insight_screen.dart';
 import 'package:prob/screens/main_screen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:prob/screens/profile_screen.dart';
+import 'package:prob/screens/backup_screen.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -17,17 +18,30 @@ class MainNavigator extends StatelessWidget {
     controller = PersistentTabController(initialIndex: 0);
 
     List<Widget> buildScreens() {
-      return [const MainScreen(), const ProfileScreen()];
+      return [
+        const MainScreen(),
+        const InsightScreen(),
+        const BackupScreen(),
+      ];
     }
 
     List<PersistentBottomNavBarItem> navBarsItems() {
+      PersistentBottomNavBarItem(
+          icon: const Icon(Icons.home_rounded),
+          activeColorPrimary: Colors.blue,
+          inactiveColorPrimary: Colors.grey);
+
       return [
         PersistentBottomNavBarItem(
             icon: const Icon(Icons.home_rounded),
             activeColorPrimary: Colors.blue,
             inactiveColorPrimary: Colors.grey),
         PersistentBottomNavBarItem(
-            icon: const Icon(Icons.person_rounded),
+            icon: const Icon(Icons.insights_rounded),
+            activeColorPrimary: Colors.blue,
+            inactiveColorPrimary: Colors.grey),
+        PersistentBottomNavBarItem(
+            icon: const Icon(Icons.cloud_upload_rounded),
             activeColorPrimary: Colors.blue,
             inactiveColorPrimary: Colors.grey),
       ];
@@ -61,14 +75,9 @@ class _AddFloatingButton extends StatelessWidget {
           controller: controller,
           screens: buildScreens(),
           items: navBarsItems(),
-          handleAndroidBackButtonPress: true,
-          resizeToAvoidBottomInset: true,
-          stateManagement: true,
           hideNavigationBarWhenKeyboardAppears: true,
-          popBehaviorOnSelectedNavBarItemPress: PopBehavior.none,
           padding: const EdgeInsets.only(top: 8),
           backgroundColor: Colors.grey.shade900,
-          isVisible: true,
           animationSettings: const NavBarAnimationSettings(
             navBarItemAnimation: ItemAnimationSettings(
               duration: Duration(milliseconds: 400),
@@ -81,8 +90,6 @@ class _AddFloatingButton extends StatelessWidget {
                   ScreenTransitionAnimationType.fadeIn,
             ),
           ),
-          confineToSafeArea: true,
-          navBarHeight: kBottomNavigationBarHeight,
           navBarStyle: NavBarStyle.style12,
         ),
         _FloatingButton(),
