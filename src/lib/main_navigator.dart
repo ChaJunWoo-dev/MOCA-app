@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:prob/screens/add_expense_screen.dart';
 import 'package:prob/screens/insight_screen.dart';
 import 'package:prob/screens/main_screen.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:prob/screens/backup_screen.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:prob/widgets/common/app_speed_dial.dart';
 
 class MainNavigator extends StatelessWidget {
   const MainNavigator({super.key});
@@ -47,7 +44,7 @@ class MainNavigator extends StatelessWidget {
       ];
     }
 
-    return _AddFloatingButton(
+    return BottomNavigator(
       controller: controller,
       buildScreens: buildScreens,
       navBarsItems: navBarsItems,
@@ -55,12 +52,13 @@ class MainNavigator extends StatelessWidget {
   }
 }
 
-class _AddFloatingButton extends StatelessWidget {
+class BottomNavigator extends StatelessWidget {
   final PersistentTabController controller;
   final List<Widget> Function() buildScreens;
   final List<PersistentBottomNavBarItem> Function() navBarsItems;
 
-  const _AddFloatingButton({
+  const BottomNavigator({
+    super.key,
     required this.controller,
     required this.buildScreens,
     required this.navBarsItems,
@@ -92,49 +90,7 @@ class _AddFloatingButton extends StatelessWidget {
           ),
           navBarStyle: NavBarStyle.style12,
         ),
-        _FloatingButton(),
       ],
-    );
-  }
-}
-
-class _FloatingButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      right: 25,
-      bottom: 100,
-      child: SpeedDial(
-        spacing: 10,
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        shape: const CircleBorder(),
-        children: [
-          SpeedDialChild(
-            child: const Icon(Icons.attach_money, color: Colors.white),
-            backgroundColor: const Color.fromARGB(255, 241, 130, 130),
-            label: '지출',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddExpenseScreen(),
-              ),
-            ),
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.receipt_long, color: Colors.white),
-            backgroundColor: const Color.fromARGB(255, 165, 139, 236),
-            label: '고정비',
-            onTap: () => showTopSnackBar(
-              Overlay.of(context),
-              const CustomSnackBar.info(message: '준비 중인 기능이에요'),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

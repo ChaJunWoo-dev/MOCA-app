@@ -9,6 +9,7 @@ import 'package:prob/widgets/add_expense_screen/date_text.dart';
 import 'package:prob/widgets/add_expense_screen/expense_text_field.dart';
 import 'package:prob/widgets/add_expense_screen/input_row.dart';
 import 'package:prob/widgets/add_expense_screen/type_select_box.dart';
+import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:prob/widgets/common/my_app_bar.dart';
@@ -91,6 +92,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
     final mainColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
+      floatingActionButton: const AppSpeedDial(),
       appBar: const MyAppBar(text: '지출 추가'),
       body: Column(
         children: [

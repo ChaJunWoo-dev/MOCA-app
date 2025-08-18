@@ -4,6 +4,7 @@ import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/screens/calendar_screen.dart';
 import 'package:prob/screens/list_screen.dart';
+import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/main_screen/account_summary_header.dart';
 import 'package:prob/widgets/main_screen/budget_widget.dart';
@@ -17,6 +18,7 @@ class MainScreen extends ConsumerWidget {
     final Budget? budget = ref.watch(budgetProvider);
 
     return Scaffold(
+      floatingActionButton: const AppSpeedDial(),
       appBar: const MyAppBar(
         text: '가계부',
         weight: FontWeight.bold,
@@ -42,6 +44,7 @@ class MainScreen extends ConsumerWidget {
               subtitle: '상세 내역 빠르게 확인',
               routeWidget: ListScreen(),
             ),
+            const SizedBox(height: 80),
           ],
         ),
       ),
