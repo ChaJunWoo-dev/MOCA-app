@@ -4,6 +4,7 @@ import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/screens/calendar_screen.dart';
 import 'package:prob/screens/list_screen.dart';
+import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/main_screen/account_summary_header.dart';
 import 'package:prob/widgets/main_screen/budget_widget.dart';
 import 'package:prob/widgets/main_screen/card_button.dart';
@@ -16,9 +17,9 @@ class MainScreen extends ConsumerWidget {
     final Budget? budget = ref.watch(budgetProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('가계부', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
+      appBar: const MyAppBar(
+        text: '가계부',
+        weight: FontWeight.bold,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

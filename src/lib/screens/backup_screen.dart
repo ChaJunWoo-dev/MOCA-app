@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:prob/widgets/common/my_app_bar.dart';
 
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('데이터 백업'),
-        elevation: 1,
-        backgroundColor: Colors.white,
+    return const Scaffold(
+      appBar: MyAppBar(
+        text: '가계부',
+        weight: FontWeight.bold,
       ),
-      body: const Placeholder(),
+      body: Placeholder(),
     );
   }
 }

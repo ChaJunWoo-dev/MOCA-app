@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/expense_list/expense_list_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:prob/widgets/calendar_screen/utils.dart';
@@ -90,10 +91,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('지출 관리'),
-        elevation: 1,
-        backgroundColor: Colors.white,
+      appBar: const MyAppBar(
+        text: '지출 관리',
+        weight: FontWeight.w400,
       ),
       body: Column(
         children: [

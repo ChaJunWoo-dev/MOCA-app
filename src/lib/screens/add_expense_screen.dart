@@ -11,6 +11,7 @@ import 'package:prob/widgets/add_expense_screen/input_row.dart';
 import 'package:prob/widgets/add_expense_screen/type_select_box.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -90,9 +91,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
     final mainColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
+      appBar: const MyAppBar(text: '지출 추가'),
       body: Column(
         children: [
           Expanded(
