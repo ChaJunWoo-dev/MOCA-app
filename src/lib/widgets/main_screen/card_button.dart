@@ -21,7 +21,7 @@ class CardButton extends StatelessWidget {
         PersistentNavBarNavigator.pushNewScreen(
           context,
           screen: routeWidget,
-          withNavBar: true,
+          withNavBar: false,
           pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
       },
