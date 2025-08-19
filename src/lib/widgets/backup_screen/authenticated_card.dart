@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prob/widgets/common/button.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 class AuthenticatedCard extends StatelessWidget {
@@ -22,33 +23,57 @@ class AuthenticatedCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
+        child: Column(
           children: [
-            CircleAvatar(
-              backgroundImage:
-                  (avatarUrl.isNotEmpty) ? NetworkImage(avatarUrl) : null,
-              child: (avatarUrl.isEmpty)
-                  ? const Icon(Icons.person, size: 30)
-                  : null,
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage:
+                      (avatarUrl.isNotEmpty) ? NetworkImage(avatarUrl) : null,
+                  child: (avatarUrl.isEmpty)
+                      ? const Icon(Icons.person, size: 30)
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(email,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700)),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    await auth.signOut();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('로그아웃 완료')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.logout, size: 18),
+                  label: const Text('로그아웃'),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(email,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700)),
-            ),
-            TextButton.icon(
-              onPressed: () async {
-                await auth.signOut();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('로그아웃 완료')),
-                  );
-                }
-              },
-              icon: const Icon(Icons.logout, size: 18),
-              label: const Text('로그아웃'),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: '클라우드에 저장',
+                    onPressed: () {},
+                    width: double.infinity,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: AppButton(
+                    text: '데이터 가져오기',
+                    onPressed: () {},
+                    width: double.infinity,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
