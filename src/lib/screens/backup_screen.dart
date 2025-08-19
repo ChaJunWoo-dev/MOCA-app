@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:prob/widgets/backup_screen/storage_card.dart';
 import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import 'package:storage_space/storage_space.dart';
 
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
@@ -21,9 +23,9 @@ class BackupScreen extends StatelessWidget {
           children: [
             _AuthHeroSection(),
             SizedBox(height: 16),
-            _StorageCard(usedMB: 38, totalMB: 100),
-            SizedBox(height: 12),
             _InfoCard(title: '마지막 백업', content: '2024년 4월 24일 20:15'),
+            SizedBox(height: 16),
+            StorageCard(),
           ],
         ),
       ),
@@ -150,50 +152,6 @@ class _AuthHeroSection extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _StorageCard extends StatelessWidget {
-  final int usedMB;
-  final int totalMB;
-
-  const _StorageCard({
-    required this.usedMB,
-    required this.totalMB,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final ratio = (usedMB / totalMB).clamp(0, 1).toDouble();
-
-    return Card(
-      elevation: 0,
-      color: const Color(0xFFF2F4F7),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text(
-            '스토리지 사용량',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(value: ratio, minHeight: 10),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '$usedMB MB / $totalMB MB',
-            style: const TextStyle(color: Colors.black87),
-          ),
-        ]),
-      ),
     );
   }
 }
