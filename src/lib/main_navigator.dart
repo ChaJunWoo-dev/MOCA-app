@@ -3,7 +3,6 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:prob/screens/insight_screen.dart';
 import 'package:prob/screens/main_screen.dart';
 import 'package:prob/screens/backup_screen.dart';
-import 'package:prob/widgets/common/app_speed_dial.dart';
 
 class MainNavigator extends StatelessWidget {
   const MainNavigator({super.key});
