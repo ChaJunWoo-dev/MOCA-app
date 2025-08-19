@@ -12,55 +12,42 @@ class BackupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      floatingActionButton: AppSpeedDial(),
-      appBar: MyAppBar(
+    final auth = Supabase.instance.client.auth;
+
+    return Scaffold(
+      floatingActionButton: const AppSpeedDial(),
+      appBar: const MyAppBar(
         text: '클라우드 저장/불러오기',
         weight: FontWeight.bold,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _AuthHeroSection(),
-            SizedBox(height: 16),
-            BackupDateCard(),
-            SizedBox(height: 16),
-            StorageCard(),
-          ],
-        ),
-      ),
-    );
-  }
-}
+      body: StreamBuilder<AuthState>(
+          stream: auth.onAuthStateChange,
+          builder: (context, asyncSnapshot) {
+            final session = asyncSnapshot.data?.session ?? auth.currentSession;
+            final email = session?.user.email ?? '계정';
+            final avatarUrl = session?.user.userMetadata?['avatar_url'];
 
-class _AuthHeroSection extends StatelessWidget {
-  const _AuthHeroSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = Supabase.instance.client.auth;
-
-    return StreamBuilder<AuthState>(
-      stream: auth.onAuthStateChange,
-      builder: (context, snapshot) {
-        final session = snapshot.data?.session ?? auth.currentSession;
-
-        if (session == null) {
-          return const UnauthenticatedCard();
-        }
-
-        final email = session.user.email ?? '계정';
-        final avatarUrl = session.user.userMetadata?['avatar_url'];
-
-        return AuthenticatedCard(
-          session: session,
-          email: email,
-          avatarUrl: avatarUrl,
-          auth: auth,
-        );
-      },
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  session == null
+                      ? const UnauthenticatedCard()
+                      : AuthenticatedCard(
+                          session: session,
+                          email: email,
+                          avatarUrl: avatarUrl,
+                          auth: auth,
+                        ),
+                  const SizedBox(height: 16),
+                  const BackupDateCard(),
+                  const SizedBox(height: 16),
+                  const StorageCard(),
+                ],
+              ),
+            );
+          }),
     );
   }
 }
