@@ -39,4 +39,16 @@ class ExpenseRepository {
 
     return query.watch();
   }
+
+  Future<List<Expense>> getExpensesInRange(DateTime start, DateTime end) {
+    final query = (db.select(db.expenses)
+      ..where((expense) =>
+          expense.date.isBiggerOrEqualValue(start) &
+          expense.date.isSmallerThanValue(end))
+      ..orderBy([
+        (expense) => OrderingTerm.desc(expense.date),
+        (expense) => OrderingTerm.desc(expense.id),
+      ]));
+    return query.get();
+  }
 }

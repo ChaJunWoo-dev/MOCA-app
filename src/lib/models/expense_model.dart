@@ -22,4 +22,15 @@ class ExpenseModel {
         vendor = map['vendor'] as String,
         categorySlug = map['categorySlug'] as String?,
         memo = map['memo'] as String?;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'date': date.toIso8601String(),
+      'amount': amount,
+      'vendor': vendor,
+      'categorySlug': categorySlug,
+      'memo': memo,
+    };
+  }
 }

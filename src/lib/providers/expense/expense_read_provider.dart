@@ -64,3 +64,12 @@ final dailyGroupsProvider =
     return groups;
   });
 });
+
+final last3MonthsProvider = FutureProvider<List<Expense>>((ref) async {
+  final repo = ref.read(expenseRepositoryProvider);
+  final now = DateTime.now();
+  final start = DateTime(now.year, now.month - 2, 1);
+  final end = DateTime(now.year, now.month + 1, 1);
+
+  return repo.getExpensesInRange(start, end);
+});
