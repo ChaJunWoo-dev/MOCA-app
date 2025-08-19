@@ -119,8 +119,6 @@ class _BudgetWidgetState extends State<BudgetWidget> {
               width: double.infinity,
               height: 40,
               onPressed: () => onSetBudget(ref),
-              backgroundColor: const Color(0xFF4CAF93),
-              textColor: Colors.white,
             ),
           ],
         );
