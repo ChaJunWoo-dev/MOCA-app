@@ -7,8 +7,37 @@ import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
-class BackupScreen extends StatelessWidget {
+class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
+
+  @override
+  State<BackupScreen> createState() => _BackupScreenState();
+}
+
+class _BackupScreenState extends State<BackupScreen> {
+  DateTime? _lastBackupDate;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    _getLastBackupDate(userId);
+  }
+
+  Future<void> _getLastBackupDate(String? userId) async {
+    if (userId == null) return;
+
+    final backupData = await Supabase.instance.client.storage
+        .from('backups')
+        .list(path: userId);
+
+    if (backupData.isEmpty) return;
+
+    setState(
+      () => _lastBackupDate = DateTime.parse(backupData.first.updatedAt!),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +46,7 @@ class BackupScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: const AppSpeedDial(),
       appBar: const MyAppBar(
-        text: '클라우드 저장/불러오기',
+        text: '클라우드 저장/가져오기',
         weight: FontWeight.bold,
       ),
       body: StreamBuilder<AuthState>(
@@ -39,9 +68,11 @@ class BackupScreen extends StatelessWidget {
                           email: email,
                           avatarUrl: avatarUrl,
                           auth: auth,
+                          onBackupUpdated: _getLastBackupDate,
                         ),
                   const SizedBox(height: 16),
-                  const BackupDateCard(),
+                  BackupDateCard(
+                      session: session, lastBackupDate: _lastBackupDate),
                   const SizedBox(height: 16),
                   const StorageCard(),
                 ],

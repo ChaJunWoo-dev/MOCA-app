@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +15,7 @@ class AuthenticatedCard extends ConsumerWidget {
   final Session? session;
   final String email, avatarUrl;
   final GoTrueClient auth;
+  final void Function(String?) onBackupUpdated;
 
   const AuthenticatedCard({
     super.key,
@@ -23,6 +23,7 @@ class AuthenticatedCard extends ConsumerWidget {
     required this.email,
     required this.avatarUrl,
     required this.auth,
+    required this.onBackupUpdated,
   });
 
   @override
@@ -88,8 +89,7 @@ class AuthenticatedCard extends ConsumerWidget {
         final jsonString = jsonEncode(uploadJson);
 
         final userId = session?.user.id;
-        final fileName =
-            '$userId/backup_${DateTime.now().millisecondsSinceEpoch}.json';
+        final fileName = '$userId/backup.json';
 
         await Supabase.instance.client.storage.from('backups').uploadBinary(
               fileName,
@@ -99,6 +99,8 @@ class AuthenticatedCard extends ConsumerWidget {
                 upsert: true,
               ),
             );
+
+        onBackupUpdated(userId);
 
         if (!context.mounted) return;
 
