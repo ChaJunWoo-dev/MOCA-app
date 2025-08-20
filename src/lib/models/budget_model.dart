@@ -11,7 +11,7 @@ class BudgetModel {
 
   BudgetModel.fromMap(Map<String, dynamic> map)
       : month = map['month'] as String,
-        limit = map['mlimitonth'] as int,
+        limit = map['limit'] as int,
         updatedAt = DateTime.parse(map['updatedAt'] as String);
 
   Map<String, dynamic> toMap() {

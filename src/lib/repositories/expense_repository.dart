@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:prob/db/database.dart';
+import 'package:prob/models/expense_model.dart';
 
 class ExpenseRepository {
   final AppDatabase db;
@@ -50,5 +51,24 @@ class ExpenseRepository {
         (expense) => OrderingTerm.desc(expense.id),
       ]));
     return query.get();
+  }
+
+  Future<void> replaceAll(List<ExpenseModel> expenses) async {
+    await db.delete(db.expenses).go();
+    await db.batch((batch) {
+      batch.insertAll(
+        db.expenses,
+        expenses
+            .map((expense) => ExpensesCompanion(
+                  id: Value(expense.id),
+                  date: Value(expense.date),
+                  amount: Value(expense.amount),
+                  vendor: Value(expense.vendor),
+                  categorySlug: Value(expense.categorySlug),
+                  memo: Value(expense.memo),
+                ))
+            .toList(),
+      );
+    });
   }
 }

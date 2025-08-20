@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/models/budget_model.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/providers/backup_provider.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/providers/expense/expense_read_provider.dart';
 import 'package:prob/widgets/common/button.dart';
@@ -75,6 +75,17 @@ class AuthenticatedCard extends ConsumerWidget {
 
     Future<void> uploadStorage() async {
       try {
+        final userId = session?.user.id;
+
+        if (userId == null) {
+          if (!context.mounted) return;
+
+          showTopSnackBar(
+            Overlay.of(context),
+            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
+          );
+        }
+
         final budget = getBudgetData();
         final expenses = await getExpenseData();
 
@@ -87,8 +98,6 @@ class AuthenticatedCard extends ConsumerWidget {
           'expenses': expenses.map((expense) => expense.toMap()).toList(),
         };
         final jsonString = jsonEncode(uploadJson);
-
-        final userId = session?.user.id;
         final fileName = '$userId/backup.json';
 
         await Supabase.instance.client.storage.from('backups').uploadBinary(
@@ -114,6 +123,76 @@ class AuthenticatedCard extends ConsumerWidget {
         showTopSnackBar(
           Overlay.of(context),
           const CustomSnackBar.error(message: '클라우드 저장 실패'),
+        );
+      }
+    }
+
+    Future<void> downloadStorage() async {
+      try {
+        final userId = session?.user.id;
+
+        if (userId == null) {
+          if (!context.mounted) return;
+
+          showTopSnackBar(
+            Overlay.of(context),
+            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
+          );
+        }
+
+        final fileName = '$userId/backup.json';
+        final bytes = await Supabase.instance.client.storage
+            .from('backups')
+            .download(fileName);
+
+        if (bytes.isEmpty) {
+          if (context.mounted) {
+            showTopSnackBar(Overlay.of(context),
+                const CustomSnackBar.error(message: '백업 파일이 없어요'));
+          }
+
+          return;
+        }
+
+        final jsonString = utf8.decode(bytes);
+        final Map<String, dynamic> data = jsonDecode(jsonString);
+
+        if (data['schemaVersion'] != 1 ||
+            data['budget'] == null ||
+            data['expenses'] == null) {
+          if (context.mounted) {
+            showTopSnackBar(
+              Overlay.of(context),
+              const CustomSnackBar.error(message: '형식 오류 - 관리자에게 문의하세요'),
+            );
+          }
+
+          return;
+        }
+
+        final budgetModel = BudgetModel.fromMap(data['budget']);
+        final expenseModels = (data['expenses'] as List)
+            .map((expense) => ExpenseModel.fromMap(expense))
+            .toList();
+        final backupProvider = ref.read(backupServiceProvider);
+
+        await backupProvider.restore(
+          budget: budgetModel,
+          expenses: expenseModels,
+        );
+
+        if (!context.mounted) return;
+
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(message: '데이터 복구 완료'),
+        );
+      } catch (err) {
+        if (!context.mounted) return;
+
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(message: '데이터 가져오기 실패'),
         );
       }
     }
@@ -170,7 +249,7 @@ class AuthenticatedCard extends ConsumerWidget {
                 Expanded(
                   child: AppButton(
                     text: '데이터 가져오기',
-                    onPressed: () {},
+                    onPressed: downloadStorage,
                   ),
                 ),
               ],
