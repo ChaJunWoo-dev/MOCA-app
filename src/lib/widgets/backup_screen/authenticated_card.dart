@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prob/models/budget_model.dart';
-import 'package:prob/models/expense_model.dart';
-import 'package:prob/providers/backup_provider.dart';
-import 'package:prob/providers/budget/budget_provider.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/error/backup_error.dart';
+import 'package:prob/providers/backup/backup_write_provider.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -28,87 +24,22 @@ class AuthenticatedCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    BudgetModel? getBudgetData() {
-      final budget = ref.read(budgetProvider);
-
-      if (budget == null || budget.month.isEmpty) {
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.error(message: '실패 - 저장할 예산이 없어요'),
-        );
-
-        return null;
-      }
-
-      return BudgetModel(
-        month: budget.month,
-        limit: budget.limit,
-        updatedAt: budget.updatedAt,
-      );
-    }
-
-    Future<List<ExpenseModel>> getExpenseData() async {
-      final expenses = await ref.read(last3MonthsProvider.future);
-
-      if (expenses.isEmpty) {
-        if (!context.mounted) return [];
-
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.error(message: '실패 - 최근 3개월 지출이 없어요'),
-        );
-
-        return [];
-      }
-
-      return expenses
-          .map((expense) => ExpenseModel(
-                id: expense.id,
-                date: expense.date,
-                amount: expense.amount,
-                vendor: expense.vendor,
-                categorySlug: expense.categorySlug,
-                memo: expense.memo,
-              ))
-          .toList();
-    }
-
     Future<void> uploadStorage() async {
+      final userId = session?.user.id;
+
+      if (userId == null) {
+        if (!context.mounted) return;
+
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
+        );
+
+        return;
+      }
+
       try {
-        final userId = session?.user.id;
-
-        if (userId == null) {
-          if (!context.mounted) return;
-
-          showTopSnackBar(
-            Overlay.of(context),
-            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
-          );
-        }
-
-        final budget = getBudgetData();
-        final expenses = await getExpenseData();
-
-        if (budget == null || expenses.isEmpty) return;
-
-        final uploadJson = {
-          'schemaVersion': 1,
-          'uploadedAt': DateTime.now().toIso8601String(),
-          'budget': budget.toMap(),
-          'expenses': expenses.map((expense) => expense.toMap()).toList(),
-        };
-        final jsonString = jsonEncode(uploadJson);
-        final fileName = '$userId/backup.json';
-
-        await Supabase.instance.client.storage.from('backups').uploadBinary(
-              fileName,
-              utf8.encode(jsonString),
-              fileOptions: const FileOptions(
-                contentType: 'application/json',
-                upsert: true,
-              ),
-            );
-
+        await ref.read(backupWriteProvider.notifier).upload(userId);
         onBackupUpdated(userId);
 
         if (!context.mounted) return;
@@ -117,83 +48,45 @@ class AuthenticatedCard extends ConsumerWidget {
           Overlay.of(context),
           const CustomSnackBar.success(message: '클라우드 저장 성공'),
         );
-      } catch (err) {
-        if (!context.mounted) return;
-
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.error(message: '클라우드 저장 실패'),
-        );
+      } on BackupError catch (err) {
+        showTopSnackBar(Overlay.of(context),
+            CustomSnackBar.error(message: backupErrorMessage(err)));
+      } catch (_) {
+        showTopSnackBar(Overlay.of(context),
+            const CustomSnackBar.error(message: '알 수 없는 오류'));
       }
     }
 
     Future<void> downloadStorage() async {
+      final userId = session?.user.id;
+
+      if (userId == null) {
+        if (!context.mounted) return;
+
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
+        );
+
+        return;
+      }
+
       try {
-        final userId = session?.user.id;
-
-        if (userId == null) {
-          if (!context.mounted) return;
-
-          showTopSnackBar(
-            Overlay.of(context),
-            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'),
-          );
-        }
-
-        final fileName = '$userId/backup.json';
-        final bytes = await Supabase.instance.client.storage
-            .from('backups')
-            .download(fileName);
-
-        if (bytes.isEmpty) {
-          if (context.mounted) {
-            showTopSnackBar(Overlay.of(context),
-                const CustomSnackBar.error(message: '백업 파일이 없어요'));
-          }
-
-          return;
-        }
-
-        final jsonString = utf8.decode(bytes);
-        final Map<String, dynamic> data = jsonDecode(jsonString);
-
-        if (data['schemaVersion'] != 1 ||
-            data['budget'] == null ||
-            data['expenses'] == null) {
-          if (context.mounted) {
-            showTopSnackBar(
-              Overlay.of(context),
-              const CustomSnackBar.error(message: '형식 오류 - 관리자에게 문의하세요'),
-            );
-          }
-
-          return;
-        }
-
-        final budgetModel = BudgetModel.fromMap(data['budget']);
-        final expenseModels = (data['expenses'] as List)
-            .map((expense) => ExpenseModel.fromMap(expense))
-            .toList();
-        final backupProvider = ref.read(backupServiceProvider);
-
-        await backupProvider.restore(
-          budget: budgetModel,
-          expenses: expenseModels,
-        );
+        await ref.read(backupWriteProvider.notifier).restore(userId);
 
         if (!context.mounted) return;
-
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.success(message: '데이터 복구 완료'),
-        );
-      } catch (err) {
+        showTopSnackBar(Overlay.of(context),
+            const CustomSnackBar.success(message: '데이터 복구 완료'));
+      } on BackupError catch (err) {
         if (!context.mounted) return;
 
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.error(message: '데이터 가져오기 실패'),
-        );
+        showTopSnackBar(Overlay.of(context),
+            CustomSnackBar.error(message: backupErrorMessage(err)));
+      } catch (_) {
+        if (!context.mounted) return;
+
+        showTopSnackBar(Overlay.of(context),
+            const CustomSnackBar.error(message: '데이터 가져오기 실패'));
       }
     }
 
