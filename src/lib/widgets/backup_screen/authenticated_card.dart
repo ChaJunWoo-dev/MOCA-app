@@ -1,3 +1,4 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/error/backup_error.dart';
@@ -24,9 +25,9 @@ class AuthenticatedCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Future<void> uploadStorage() async {
-      final userId = session?.user.id;
+    final userId = session?.user.id;
 
+    Future<void> uploadStorage() async {
       if (userId == null) {
         if (!context.mounted) return;
 
@@ -58,8 +59,6 @@ class AuthenticatedCard extends ConsumerWidget {
     }
 
     Future<void> downloadStorage() async {
-      final userId = session?.user.id;
-
       if (userId == null) {
         if (!context.mounted) return;
 
@@ -88,6 +87,50 @@ class AuthenticatedCard extends ConsumerWidget {
         showTopSnackBar(Overlay.of(context),
             const CustomSnackBar.error(message: '데이터 가져오기 실패'));
       }
+    }
+
+    Future<void> onSavePressed() async {
+      if (userId == null) {
+        showTopSnackBar(Overlay.of(context),
+            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'));
+
+        return;
+      }
+
+      final res = await showOkCancelAlertDialog(
+        context: context,
+        title: '현재 예산과 최근 3개월 지출을 저장할까요?',
+        message: '현재 백업된 데이터를 지우고 새로 저장합니다.',
+        okLabel: '예',
+        cancelLabel: '아니오',
+        barrierDismissible: false,
+      );
+
+      if (res != OkCancelResult.ok) return;
+
+      await uploadStorage();
+    }
+
+    Future<void> onRestorePressed() async {
+      if (userId == null) {
+        showTopSnackBar(Overlay.of(context),
+            const CustomSnackBar.error(message: '로그인 후 이용해 주세요'));
+
+        return;
+      }
+
+      final res = await showOkCancelAlertDialog(
+        context: context,
+        title: '정말 덮어쓰시겠어요?',
+        message: '현재 데이터는 삭제되고, 백업 데이터로 대체됩니다.',
+        okLabel: '예',
+        cancelLabel: '아니오',
+        barrierDismissible: false,
+      );
+
+      if (res != OkCancelResult.ok) return;
+
+      await downloadStorage();
     }
 
     return Card(
@@ -135,14 +178,14 @@ class AuthenticatedCard extends ConsumerWidget {
                 Expanded(
                   child: AppButton(
                     text: '클라우드에 저장',
-                    onPressed: uploadStorage,
+                    onPressed: onSavePressed,
                   ),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
                   child: AppButton(
                     text: '데이터 가져오기',
-                    onPressed: downloadStorage,
+                    onPressed: onRestorePressed,
                   ),
                 ),
               ],

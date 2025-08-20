@@ -53,6 +53,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
+        dialogTheme: const DialogThemeData(
+          titleTextStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
         textTheme: const TextTheme(
           headlineMedium: TextStyle(
             fontSize: 20,

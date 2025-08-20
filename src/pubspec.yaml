@@ -67,6 +67,7 @@ dependencies:
   supabase_auth_ui: ^0.5.5
   flutter_dotenv: ^5.2.1
   storage_space: ^1.2.0
+  adaptive_dialog: ^2.4.2
 
 dev_dependencies:
   drift_dev: ^2.28.1
