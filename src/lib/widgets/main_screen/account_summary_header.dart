@@ -33,7 +33,7 @@ class AccountSummaryHeader extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      const Text('지출',
+                      const Text('이번 달 지출',
                           style:
                               TextStyle(fontSize: 16, color: Colors.black54)),
                       const SizedBox(width: 10),
@@ -45,7 +45,7 @@ class AccountSummaryHeader extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Text('예산',
+                      const Text('이번 달 예산',
                           style:
                               TextStyle(fontSize: 16, color: Colors.black54)),
                       const SizedBox(width: 10),
@@ -61,15 +61,6 @@ class AccountSummaryHeader extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
-            AppButton(
-              height: 40,
-              textSize: 14,
-              text: '분석',
-              onPressed: () {},
-              elevation: 0,
-              backgroundColor: Colors.grey.shade300,
-              textColor: Colors.black,
             ),
           ],
         );

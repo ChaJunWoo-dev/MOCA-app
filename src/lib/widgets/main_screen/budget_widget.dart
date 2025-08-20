@@ -159,7 +159,7 @@ class _ExpenseSummaryCard extends ConsumerWidget {
             child: Column(
               children: [
                 _SummaryRow(
-                  title: '지난달 지출',
+                  title: '지난 달 지출',
                   expenseTotal: lastMonthTotal,
                 ),
                 const SizedBox(height: 7),
