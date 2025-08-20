@@ -131,15 +131,24 @@ class _ExpenseSummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
-    final monthKey = DateTime(now.year, now.month, 1);
-    final totals = ref.watch(total3MonthProvider(monthKey));
+    final nextMonthStart = DateTime(now.year, now.month + 1, 1);
+    final last3MonthsStart = DateTime(now.year, now.month - 2, 1);
+    final totals3Month = ref.watch(totalRangeMonthProvider((
+      startDate: last3MonthsStart,
+      endDate: nextMonthStart,
+    )));
 
-    return totals.when(
+    return totals3Month.when(
       loading: () => const CircularProgressIndicator(),
       error: (err, stack) => const Center(child: Text('데이터를 가져오지 못했어요')),
-      data: (values) {
-        final lastMonth = values.first;
-        final avg3 = (values.reduce((a, b) => a + b) / values.length).round();
+      data: (monthlyTotals) {
+        final values = monthlyTotals.length >= 3
+            ? monthlyTotals
+            : List<int>.filled(3 - monthlyTotals.length, 0) + monthlyTotals;
+
+        final lastMonthTotal = values[1];
+        final avg3MonthTotal =
+            ((values[0] + values[1] + values[2]) / 3).round();
 
         return Container(
           decoration: BoxDecoration(
@@ -151,12 +160,12 @@ class _ExpenseSummaryCard extends ConsumerWidget {
               children: [
                 _SummaryRow(
                   title: '지난달 지출',
-                  expenseTotal: lastMonth,
+                  expenseTotal: lastMonthTotal,
                 ),
                 const SizedBox(height: 7),
                 _SummaryRow(
                   title: '최근 3개월 평균 지출',
-                  expenseTotal: avg3,
+                  expenseTotal: avg3MonthTotal,
                 ),
               ],
             ),

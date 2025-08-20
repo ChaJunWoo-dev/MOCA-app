@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/utils/type.dart';
 
 class ExpenseRepository {
   final AppDatabase db;
@@ -70,5 +71,44 @@ class ExpenseRepository {
             .toList(),
       );
     });
+  }
+
+  Stream<List<int>> getRangeMonthsTotal(DateRange dateRange) {
+    DateTime initMonth(DateTime date) => DateTime(
+          date.year,
+          date.month,
+          1,
+        );
+
+    final startMonth = initMonth(dateRange.startDate);
+    final endMonth = initMonth(dateRange.endDate);
+    final rowsStream = (db.select(db.expenses)
+          ..where((expense) =>
+              expense.date.isBiggerOrEqualValue(startMonth) &
+              expense.date.isSmallerThanValue(endMonth)))
+        .watch();
+
+    final result = rowsStream.map((rows) {
+      final totalsByMonth = <DateTime, int>{};
+
+      for (var row in rows) {
+        final date = row.date;
+        final key = DateTime(date.year, date.month, 1);
+
+        totalsByMonth[key] = (totalsByMonth[key] ?? 0) + row.amount;
+      }
+
+      final monthCount = (endMonth.year - startMonth.year) * 12 +
+          (endMonth.month - startMonth.month);
+
+      return List.generate(monthCount, (i) {
+        final current = DateTime(startMonth.year, startMonth.month + i, 1);
+
+        return totalsByMonth[current] ?? 0;
+      });
+    });
+
+    print(result.first);
+    return result;
   }
 }

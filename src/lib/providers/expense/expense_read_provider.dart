@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/expense/expense_repository_provider.dart';
+import 'package:prob/utils/type.dart';
 
 final monthlyTotalProvider = StreamProvider.family<int, DateTime>((ref, date) {
   final repo = ref.read(expenseRepositoryProvider);
@@ -8,17 +9,11 @@ final monthlyTotalProvider = StreamProvider.family<int, DateTime>((ref, date) {
   return repo.getMonthlyExpensesTotal(date);
 });
 
-final total3MonthProvider =
-    FutureProvider.family<List<int>, DateTime>((ref, base) async {
-  final monthKeys = [
-    DateTime(base.year, base.month - 1, 1),
-    DateTime(base.year, base.month - 2, 1),
-    DateTime(base.year, base.month - 3, 1),
-  ];
+final totalRangeMonthProvider =
+    StreamProvider.family<List<int>, DateRange>((ref, dateRange) {
+  final repo = ref.read(expenseRepositoryProvider);
 
-  return Future.wait(
-    monthKeys.map((key) => ref.watch(monthlyTotalProvider(key).future)),
-  );
+  return repo.getRangeMonthsTotal(dateRange);
 });
 
 final monthlyExpensesProvider =
