@@ -24,10 +24,14 @@ class _DateTextState extends State<DateText> {
 
     Future<void> onSelectDate() async {
       final DateTime? pickedDate = await showDatePicker(
+        locale: const Locale('ko', 'KR'),
         context: context,
         firstDate: threeMonthsAgo,
         lastDate: threeMonthsLater,
         initialDate: now,
+        helpText: '날짜 선택',
+        cancelText: '취소',
+        confirmText: '확인',
       );
 
       if (pickedDate != null) widget.onDateChanged(pickedDate);

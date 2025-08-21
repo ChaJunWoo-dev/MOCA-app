@@ -200,8 +200,8 @@ class _State extends ConsumerState<AddExpenseScreen> {
     return Scaffold(
       floatingActionButton: const AppSpeedDial(),
       appBar: isEdit
-          ? const MyAppBar(text: '지출 추가')
-          : const MyAppBar(text: '지출 상세 내역'),
+          ? const MyAppBar(text: '지출 상세 내역')
+          : const MyAppBar(text: '지출 추가'),
       body: Column(
         children: [
           Expanded(
