@@ -5,6 +5,7 @@ import 'package:prob/providers/expense/expense_read_provider.dart';
 import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/insight_screen/category_pie_chart.dart';
+import 'package:prob/widgets/insight_screen/daily_expense_chart.dart';
 
 class InsightScreen extends ConsumerWidget {
   const InsightScreen({super.key});
@@ -61,6 +62,29 @@ class InsightScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                Card(
+                  color: Colors.grey.shade100,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 15,
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          '최근 14일 지출',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        DailyExpenseChart(expenses: expenses),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 100),
               ],
             ),
           );
