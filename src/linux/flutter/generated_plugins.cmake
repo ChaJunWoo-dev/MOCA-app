@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  dynamic_color
   gtk
   mobkit_calendar
   sqlite3_flutter_libs

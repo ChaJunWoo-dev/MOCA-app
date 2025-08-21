@@ -108,7 +108,6 @@ class ExpenseRepository {
       });
     });
 
-    print(result.first);
     return result;
   }
 }

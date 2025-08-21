@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
+  dynamic_color
   mobkit_calendar
   permission_handler_windows
   sqlite3_flutter_libs
