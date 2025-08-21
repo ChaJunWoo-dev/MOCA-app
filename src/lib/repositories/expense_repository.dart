@@ -11,6 +11,16 @@ class ExpenseRepository {
   Future<void> insertExpense(ExpensesCompanion data) =>
       db.into(db.expenses).insert((data));
 
+  Future<void> deleteExpenseById(int id) async {
+    await (db.delete(db.expenses)..where((expense) => expense.id.equals(id)))
+        .go();
+  }
+
+  Future<void> updateExpenseById(int id, ExpensesCompanion data) async {
+    await (db.update(db.expenses)..where((expense) => expense.id.equals(id)))
+        .write(data);
+  }
+
   Stream<int> getMonthlyExpensesTotal(DateTime date) {
     final monthStart = DateTime(date.year, date.month, 1);
     final nextMonthStart = DateTime(date.year, date.month + 1, 1);

@@ -28,15 +28,6 @@ class AppSpeedDial extends StatelessWidget {
             );
           },
         ),
-        SpeedDialChild(
-          child: const Icon(Icons.receipt_long, color: Colors.white),
-          backgroundColor: const Color.fromARGB(255, 165, 139, 236),
-          label: '고정비',
-          onTap: () => showTopSnackBar(
-            Overlay.of(context),
-            const CustomSnackBar.info(message: '준비 중인 기능이에요'),
-          ),
-        ),
       ],
     );
   }

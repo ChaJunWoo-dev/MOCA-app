@@ -107,7 +107,7 @@ class DailySection extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         ...visibleGroups[i].items.map(
-              (expense) => ExpenseTile(item: expense),
+              (expense) => ExpenseTile(expense: expense),
             ),
       ],
     );

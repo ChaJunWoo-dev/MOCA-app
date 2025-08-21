@@ -7,3 +7,10 @@ final categoryProvider = FutureProvider<List<Category>>((ref) async {
 
   return repo.getAll();
 });
+
+final categoryBySlugProvider =
+    FutureProvider.family<Category?, String>((ref, slug) async {
+  final repo = ref.read(categoryRepositoryProvider);
+
+  return repo.getBySlug(slug);
+});
