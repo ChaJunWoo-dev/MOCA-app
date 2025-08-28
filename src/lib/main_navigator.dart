@@ -22,11 +22,6 @@ class MainNavigator extends StatelessWidget {
     }
 
     List<PersistentBottomNavBarItem> navBarsItems() {
-      PersistentBottomNavBarItem(
-          icon: const Icon(Icons.home_rounded),
-          activeColorPrimary: Colors.blue,
-          inactiveColorPrimary: Colors.grey);
-
       return [
         PersistentBottomNavBarItem(
             icon: const Icon(Icons.home_rounded),

@@ -6,11 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 final kEvents = LinkedHashMap<DateTime, List<ExpenseModel>>(
   equals: isSameDay,
   hashCode: getHashCode,
-)..addAll(_kEventSource);
-
-final Map<DateTime, List<ExpenseModel>> _kEventSource = {}..addAll(
-    {},
-  );
+);
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;

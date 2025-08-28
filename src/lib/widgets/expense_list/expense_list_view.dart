@@ -5,9 +5,6 @@ import 'package:prob/providers/expense/expense_read_provider.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/expense_list/expense_tile.dart';
 
-bool sameYMD(DateTime a, DateTime b) =>
-    a.year == b.year && a.month == b.month && a.day == b.day;
-
 class ExpenseListView extends ConsumerWidget {
   final DateTime monthDate;
   final DateTime? selectedDay;
