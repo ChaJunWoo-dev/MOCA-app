@@ -20,8 +20,9 @@ class CategoryPieTop5 extends StatelessWidget {
       final group = <String, num>{};
 
       for (final expense in expense) {
-        group[expense.categorySlug ?? '미분류'] =
-            (group[expense.categorySlug] ?? 0) + expense.amount;
+        final categorySlug = expense.categorySlug ?? '미분류';
+
+        group[categorySlug] = (group[categorySlug] ?? 0) + expense.amount;
       }
       return group;
     }
