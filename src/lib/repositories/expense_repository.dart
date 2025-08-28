@@ -101,7 +101,7 @@ class ExpenseRepository {
     final result = rowsStream.map((rows) {
       final totalsByMonth = <DateTime, int>{};
 
-      for (var row in rows) {
+      for (final row in rows) {
         final date = row.date;
         final key = DateTime(date.year, date.month, 1);
 
