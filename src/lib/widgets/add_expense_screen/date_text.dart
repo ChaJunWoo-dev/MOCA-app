@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:prob/utils/date_utils.dart';
 
 class DateText extends StatefulWidget {
   final DateTime selectedDate;
@@ -19,7 +20,7 @@ class _DateTextState extends State<DateText> {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final threeMonthsAgo = DateTime(now.year, now.month - 3, now.day);
+    final threeMonthsAgo = AppDateUtils.getUiDateLimit();
     final threeMonthsLater = DateTime(now.year, now.month, now.day);
 
     Future<void> onSelectDate() async {
