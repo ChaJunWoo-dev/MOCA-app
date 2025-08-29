@@ -2,6 +2,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prob/constants/message_constants.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/category/category_provider.dart';
 import 'package:prob/providers/repository_providers.dart';
@@ -80,11 +81,11 @@ class _State extends ConsumerState<AddExpenseScreen> {
     final amount = int.tryParse(digits) ?? 0;
 
     if (amount <= 0) {
-      return (amount: null, error: '금액을 입력하세요');
+      return (amount: null, error: Messages.amountRequired);
     }
 
     if (vendorCtrl.text.trim().isEmpty) {
-      return (amount: null, error: '거래처 명을 입력하세요');
+      return (amount: null, error: Messages.vendorRequired);
     }
 
     return (amount: amount, error: null);
@@ -130,7 +131,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
 
     await expenseNotifier.save(_createExpenseCompanion(validation.amount!));
 
-    _showSuccessAndClose('저장했어요');
+    _showSuccessAndClose(Messages.expenseSaved);
   }
 
   Future<void> _update() async {
@@ -151,7 +152,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
           _createExpenseCompanion(validation.amount!),
         );
 
-    _showSuccessAndClose('수정했어요');
+    _showSuccessAndClose(Messages.expenseUpdated);
   }
 
   Future<void> _delete() async {
@@ -161,7 +162,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
 
     final result = await showOkCancelAlertDialog(
       context: context,
-      title: '삭제할까요?',
+      title: Messages.deleteConfirmTitle,
       message:
           '${current.vendor} • ${toCurrencyString(current.amount.toString(), mantissaLength: 0)}원',
       okLabel: '삭제',
@@ -180,7 +181,7 @@ class _State extends ConsumerState<AddExpenseScreen> {
 
     showTopSnackBar(
       Overlay.of(context),
-      const CustomSnackBar.success(message: '삭제했어요'),
+      const CustomSnackBar.success(message: Messages.expenseDeleted),
     );
     Navigator.pop(context);
   }
