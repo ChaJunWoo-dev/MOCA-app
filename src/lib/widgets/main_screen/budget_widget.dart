@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/services/budget_validation_service.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -34,26 +35,23 @@ class _BudgetWidgetState extends State<BudgetWidget> {
 
   Future<void> onSetBudget(WidgetRef ref) async {
     FocusScope.of(context).unfocus();
-    final text = budgetController.text.trim();
-    final digits = toNumericString(text);
-    final limit = int.tryParse(digits);
-
-    if (limit == null || limit <= 0 || limit > 100000000) {
+    
+    final validationResult = BudgetValidationService.validateBudget(budgetController.text);
+    
+    if (!validationResult.isValid) {
       showTopSnackBar(
         Overlay.of(context),
-        const CustomSnackBar.error(message: '예산은 1원 이상, 1억 이하로 설정해주세요.'),
+        CustomSnackBar.error(message: validationResult.errorMessage!),
       );
-
       return;
     }
 
-    final now = DateTime.now();
-    final yearMonth = "${now.year}-${now.month.toString().padLeft(2, '0')}";
+    final yearMonth = BudgetValidationService.getCurrentYearMonth();
 
     await ref.read(budgetProvider.notifier).save(
           BudgetsCompanion(
             month: Value(yearMonth),
-            limit: Value(limit),
+            limit: Value(validationResult.value!),
             updatedAt: Value(DateTime.now()),
           ),
         );

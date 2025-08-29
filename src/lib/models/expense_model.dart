@@ -1,3 +1,6 @@
+import 'package:drift/drift.dart';
+import 'package:prob/db/database.dart';
+
 class ExpenseModel {
   final int id;
   final DateTime date;
@@ -32,5 +35,16 @@ class ExpenseModel {
       'categorySlug': categorySlug,
       'memo': memo,
     };
+  }
+
+  ExpensesCompanion toCompanion() {
+    return ExpensesCompanion(
+      id: Value(id),
+      date: Value(date),
+      amount: Value(amount),
+      vendor: Value(vendor),
+      categorySlug: Value(categorySlug),
+      memo: Value(memo),
+    );
   }
 }

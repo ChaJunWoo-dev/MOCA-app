@@ -1,123 +1,48 @@
-import 'package:drift/drift.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/repositories/expense_read_repository.dart';
+import 'package:prob/repositories/expense_write_repository.dart';
 import 'package:prob/utils/type.dart';
 
-class ExpenseRepository {
-  final AppDatabase db;
+class ExpenseRepository implements ExpenseReadRepository, ExpenseWriteRepository {
+  final ExpenseReadRepository _readRepo;
+  final ExpenseWriteRepository _writeRepo;
 
-  ExpenseRepository(this.db);
+  ExpenseRepository(AppDatabase db)
+      : _readRepo = ExpenseReadRepositoryImpl(db),
+        _writeRepo = ExpenseWriteRepositoryImpl(db);
 
+  // Write operations
+  @override
   Future<void> insertExpense(ExpensesCompanion data) =>
-      db.into(db.expenses).insert((data));
+      _writeRepo.insertExpense(data);
 
-  Future<void> deleteExpenseById(int id) async {
-    await (db.delete(db.expenses)..where((expense) => expense.id.equals(id)))
-        .go();
-  }
+  @override
+  Future<void> deleteExpenseById(int id) =>
+      _writeRepo.deleteExpenseById(id);
 
-  Future<void> updateExpenseById(int id, ExpensesCompanion data) async {
-    await (db.update(db.expenses)..where((expense) => expense.id.equals(id)))
-        .write(data);
-  }
+  @override
+  Future<void> updateExpenseById(int id, ExpensesCompanion data) =>
+      _writeRepo.updateExpenseById(id, data);
 
-  Stream<int> getMonthlyExpensesTotal(DateTime date) {
-    final monthStart = DateTime(date.year, date.month, 1);
-    final nextMonthStart = DateTime(date.year, date.month + 1, 1);
+  @override
+  Future<void> replaceAll(List<ExpenseModel> expenses) =>
+      _writeRepo.replaceAll(expenses);
 
-    final amountSum = db.expenses.amount.sum();
-    final query = db.selectOnly(db.expenses)
-      ..addColumns([amountSum])
-      ..where(db.expenses.date.isBiggerOrEqualValue(monthStart) &
-          db.expenses.date.isSmallerThanValue(nextMonthStart));
+  // Read operations
+  @override
+  Stream<int> getMonthlyExpensesTotal(DateTime date) =>
+      _readRepo.getMonthlyExpensesTotal(date);
 
-    return query.watchSingle().map(
-          (row) => row.read(amountSum) ?? 0,
-        );
-  }
+  @override
+  Stream<List<Expense>> getMonthlyExpenses(DateTime date) =>
+      _readRepo.getMonthlyExpenses(date);
 
-  Stream<List<Expense>> getMonthlyExpenses(DateTime date) {
-    final start = DateTime(date.year, date.month, 1);
-    final end = DateTime(date.year, date.month + 1, 1);
+  @override
+  Future<List<Expense>> getExpensesInRange(DateTime start, DateTime end) =>
+      _readRepo.getExpensesInRange(start, end);
 
-    final query = db.select(db.expenses)
-      ..where((expense) =>
-          expense.date.isBiggerOrEqualValue(start) &
-          expense.date.isSmallerThanValue(end))
-      ..orderBy([
-        (expense) => OrderingTerm.desc(expense.date),
-        (expense) => OrderingTerm.desc(expense.id),
-      ]);
-
-    return query.watch();
-  }
-
-  Future<List<Expense>> getExpensesInRange(DateTime start, DateTime end) {
-    final query = (db.select(db.expenses)
-      ..where((expense) =>
-          expense.date.isBiggerOrEqualValue(start) &
-          expense.date.isSmallerThanValue(end))
-      ..orderBy([
-        (expense) => OrderingTerm.desc(expense.date),
-        (expense) => OrderingTerm.desc(expense.id),
-      ]));
-    return query.get();
-  }
-
-  Future<void> replaceAll(List<ExpenseModel> expenses) async {
-    await db.delete(db.expenses).go();
-    await db.batch((batch) {
-      batch.insertAll(
-        db.expenses,
-        expenses
-            .map((expense) => ExpensesCompanion(
-                  id: Value(expense.id),
-                  date: Value(expense.date),
-                  amount: Value(expense.amount),
-                  vendor: Value(expense.vendor),
-                  categorySlug: Value(expense.categorySlug),
-                  memo: Value(expense.memo),
-                ))
-            .toList(),
-      );
-    });
-  }
-
-  Stream<List<int>> getRangeMonthsTotal(DateRange dateRange) {
-    DateTime initMonth(DateTime date) => DateTime(
-          date.year,
-          date.month,
-          1,
-        );
-
-    final startMonth = initMonth(dateRange.startDate);
-    final endMonth = initMonth(dateRange.endDate);
-    final rowsStream = (db.select(db.expenses)
-          ..where((expense) =>
-              expense.date.isBiggerOrEqualValue(startMonth) &
-              expense.date.isSmallerThanValue(endMonth)))
-        .watch();
-
-    final result = rowsStream.map((rows) {
-      final totalsByMonth = <DateTime, int>{};
-
-      for (final row in rows) {
-        final date = row.date;
-        final key = DateTime(date.year, date.month, 1);
-
-        totalsByMonth[key] = (totalsByMonth[key] ?? 0) + row.amount;
-      }
-
-      final monthCount = (endMonth.year - startMonth.year) * 12 +
-          (endMonth.month - startMonth.month);
-
-      return List.generate(monthCount, (i) {
-        final current = DateTime(startMonth.year, startMonth.month + i, 1);
-
-        return totalsByMonth[current] ?? 0;
-      });
-    });
-
-    return result;
-  }
+  @override
+  Stream<List<int>> getRangeMonthsTotal(DateRange dateRange) =>
+      _readRepo.getRangeMonthsTotal(dateRange);
 }
