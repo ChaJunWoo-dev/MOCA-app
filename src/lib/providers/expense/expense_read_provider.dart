@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
-import 'package:prob/providers/expense/expense_repository_provider.dart';
+import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/utils/type.dart';
 
 final monthlyTotalProvider = StreamProvider.family<int, DateTime>((ref, date) {

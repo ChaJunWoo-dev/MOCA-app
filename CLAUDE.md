@@ -65,3 +65,112 @@ This is a Korean household expense tracking Flutter web application called "Dobu
 - After making database schema changes, run `dart run build_runner build`
 - The app uses Korean language defaults and currency formatting
 - Web target is the primary platform (Chrome for development)
+
+## Code Style Guidelines
+
+**IMPORTANT**: These style guidelines apply to ALL code written in this project, regardless of file type or location.
+
+### Line Spacing for Code Blocks
+Always add blank lines between code blocks of different semantic purposes to improve readability:
+
+- **Between variable declarations and conditional statements**
+- **Between conditional statements and loops**
+- **Between loops and function calls**
+- **Before return statements**
+- **Between different logical groups of operations**
+
+#### Examples:
+
+**❌ Bad (no spacing):**
+```dart
+Future<void> processExpense() async {
+  final amount = parseAmount(input);
+  final category = getCategory();
+  if (amount <= 0) {
+    throw ValidationError('Invalid amount');
+  }
+  for (final rule in validationRules) {
+    rule.validate(amount);
+  }
+  final expense = createExpense(amount, category);
+  return saveExpense(expense);
+}
+```
+
+**✅ Good (proper spacing):**
+```dart
+Future<void> processExpense() async {
+  // Variable declarations
+  final amount = parseAmount(input);
+  final category = getCategory();
+
+  // Validation logic
+  if (amount <= 0) {
+    throw ValidationError('Invalid amount');
+  }
+
+  // Processing loop
+  for (final rule in validationRules) {
+    rule.validate(amount);
+  }
+
+  // Final operations
+  final expense = createExpense(amount, category);
+  
+  return saveExpense(expense);
+}
+```
+
+This spacing convention helps distinguish between different logical sections of code and improves overall code readability.
+
+### Comments Guidelines
+**IMPORTANT**: These comment rules apply to ALL code in this project - widgets, services, providers, repositories, models, etc.
+
+Comments should be used sparingly and only when necessary. Follow these principles:
+
+- **Self-documenting code is preferred**: Use descriptive function names, variable names, and clear logic structure
+- **Avoid obvious comments**: Don't comment what the code clearly shows
+- **Comments indicate complexity**: If you need comments, consider if the function name or structure could be improved instead
+- **Use comments only for**:
+  - Complex business logic that isn't immediately clear from the code
+  - Non-obvious algorithmic decisions
+  - External API constraints or workarounds
+  - Temporary solutions with explanations
+
+#### Examples:
+
+**❌ Bad (unnecessary comments):**
+```dart
+// Get user data
+final userData = await fetchUser();
+
+// Check if user exists
+if (userData == null) {
+  return null;
+}
+
+// Calculate total amount
+final total = userData.expenses.fold(0, (sum, expense) => sum + expense.amount);
+```
+
+**✅ Good (self-documenting code):**
+```dart
+final userData = await fetchUser();
+
+if (userData == null) {
+  return null;
+}
+
+final total = userData.expenses.fold(0, (sum, expense) => sum + expense.amount);
+```
+
+**✅ Acceptable comment (complex business logic):**
+```dart
+// Supabase requires manual upsert handling due to composite key limitations
+final existingRecord = await findExistingRecord(userId, monthKey);
+if (existingRecord != null) {
+  await updateRecord(existingRecord.id, newData);
+} else {
+  await insertRecord(newData);
+}
+```

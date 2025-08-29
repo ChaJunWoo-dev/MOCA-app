@@ -4,7 +4,7 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/category/category_provider.dart';
-import 'package:prob/providers/expense/expense_repository_provider.dart';
+import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/providers/expense/expense_write_provider.dart';
 import 'package:prob/widgets/add_expense_screen/amount_input_field.dart';
 import 'package:prob/widgets/add_expense_screen/category_select_sheet.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
-import 'package:prob/providers/category/category_repository_provider.dart';
+import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/utils/icon_mapper.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';

@@ -3,9 +3,8 @@ import 'package:prob/models/budget_model.dart';
 import 'package:prob/models/expense_model.dart';
 import 'package:prob/providers/app_database_provider.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
-import 'package:prob/providers/budget/budget_repository_provider.dart';
 import 'package:prob/providers/expense/expense_read_provider.dart';
-import 'package:prob/providers/expense/expense_repository_provider.dart';
+import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/services/backup_service.dart';
 
 final backupServiceProvider = Provider<BackupService>((ref) {
