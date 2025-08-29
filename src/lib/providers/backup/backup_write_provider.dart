@@ -5,7 +5,7 @@ import 'package:prob/models/budget_model.dart';
 import 'package:prob/models/expense_model.dart';
 import 'package:prob/providers/backup/backup_provider.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final backupWriteProvider =
@@ -23,7 +23,11 @@ class BackupWrite extends AsyncNotifier<void> {
 
       if (budget == null) throw const BackupError(BackupErrorType.noBudget);
 
-      final expenses = await ref.read(last3MonthModelsProvider.future);
+      final expensesAsync = ref.read(last3MonthsExpenseModelsProvider);
+      final expenses = expensesAsync.maybeWhen(
+        data: (data) => data,
+        orElse: () => <ExpenseModel>[],
+      );
 
       if (expenses.isEmpty) throw const BackupError(BackupErrorType.noExpenses);
 
@@ -84,7 +88,7 @@ class BackupWrite extends AsyncNotifier<void> {
       await svc.restore(budget: budget, expenses: expenses);
 
       ref.invalidate(budgetProvider);
-      ref.invalidate(last3MonthsProvider);
+      ref.invalidate(last3MonthsExpensesProvider);
 
       state = const AsyncData(null);
     } on BackupError {

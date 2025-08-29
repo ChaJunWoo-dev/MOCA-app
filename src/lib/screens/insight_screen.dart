@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/insight_screen/category_pie_chart.dart';
@@ -12,7 +12,7 @@ class InsightScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expensesAsync = ref.watch(last3MonthsProvider);
+    final expensesAsync = ref.watch(last3MonthsExpensesProvider);
 
     return Scaffold(
       floatingActionButton: const AppSpeedDial(),

@@ -3,7 +3,7 @@ import 'package:prob/models/budget_model.dart';
 import 'package:prob/models/expense_model.dart';
 import 'package:prob/providers/app_database_provider.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/services/backup_service.dart';
 
@@ -27,19 +27,21 @@ final currentBudgetModelProvider = Provider<BudgetModel?>((ref) {
   );
 });
 
-final last3MonthModelsProvider =
-    FutureProvider<List<ExpenseModel>>((ref) async {
-  final rows = await ref.watch(last3MonthsProvider.future);
-
-  return [
-    for (final row in rows)
-      ExpenseModel(
-        id: row.id,
-        date: row.date,
-        amount: row.amount,
-        vendor: row.vendor,
-        categorySlug: row.categorySlug,
-        memo: row.memo,
-      ),
-  ];
+final last3MonthsExpenseModelsProvider =
+    Provider<AsyncValue<List<ExpenseModel>>>((ref) {
+  final expensesAsync = ref.watch(last3MonthsExpensesProvider);
+  
+  return expensesAsync.whenData((rows) {
+    return [
+      for (final row in rows)
+        ExpenseModel(
+          id: row.id,
+          date: row.date,
+          amount: row.amount,
+          vendor: row.vendor,
+          categorySlug: row.categorySlug,
+          memo: row.memo,
+        ),
+    ];
+  });
 });

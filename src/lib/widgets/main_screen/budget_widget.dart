@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:prob/services/budget_validation_service.dart';
 import 'package:prob/services/expense_summary_service.dart';
 import 'package:prob/utils/money_format.dart';
@@ -131,7 +131,7 @@ class _ExpenseSummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dateRange = ExpenseSummaryService.getThreeMonthRange();
-    final totals3Month = ref.watch(totalRangeMonthProvider(dateRange));
+    final totals3Month = ref.watch(rangeMonthsTotalProvider(dateRange));
 
     return totals3Month.when(
       loading: () => const CircularProgressIndicator(),
