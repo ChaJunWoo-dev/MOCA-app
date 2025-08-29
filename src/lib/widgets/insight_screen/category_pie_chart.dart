@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/category/category_provider.dart';
+import 'package:prob/services/category_chart_service.dart';
 import 'package:prob/utils/money_format.dart';
 
 class CategoryPieTop5 extends ConsumerWidget {
@@ -28,30 +29,13 @@ class CategoryPieTop5 extends ConsumerWidget {
 
   Widget _buildChart(List<Category> categories) {
     final categoryMap = {for (var cat in categories) cat.slug: cat};
+    final chartData = CategoryChartService.processExpensesForChart(
+      expenses,
+      categoryMap,
+    );
 
-    Map<String, num> group(List<Expense> expense) {
-      final group = <String, num>{};
+    if (chartData.isEmpty) return _buildEmptyChart();
 
-      for (final expense in expense) {
-        final categorySlug = expense.categorySlug ?? '미분류';
-
-        group[categorySlug] = (group[categorySlug] ?? 0) + expense.amount;
-      }
-
-      return group;
-    }
-
-    final grouped = group(expenses);
-    final total = grouped.values.fold<num>(0, (a, b) => a + b);
-    final sorted = grouped.entries.toList()
-      ..sort(
-        (a, b) => b.value.compareTo(a.value),
-      );
-    final top = sorted.take(5).toList();
-    final etcSum = sorted.skip(5).fold<num>(
-          0,
-          (sum, entry) => sum + entry.value,
-        );
     final palette = [
       Colors.redAccent,
       Colors.blueAccent,
@@ -61,27 +45,15 @@ class CategoryPieTop5 extends ConsumerWidget {
     ];
     final slices = <_CategorySlice>[];
 
-    for (int i = 0; i < top.length; i++) {
-      final categoryEntry = top[i];
-      final percent = total == 0 ? 0.0 : (categoryEntry.value / total * 100);
-      final name = categoryMap[categoryEntry.key]?.name ?? categoryEntry.key;
+    for (int i = 0; i < chartData.length; i++) {
+      final data = chartData[i];
+      final isEtc = data.categorySlug == '기타';
 
       slices.add(_CategorySlice(
-        name: name,
-        color: palette[i % palette.length],
-        value: categoryEntry.value.toDouble(),
-        percent: percent,
-      ));
-    }
-
-    if (etcSum > 0) {
-      final percent = total == 0 ? 0.0 : (etcSum / total * 100);
-
-      slices.add(_CategorySlice(
-        name: '기타',
-        color: Colors.grey,
-        value: etcSum.toDouble(),
-        percent: percent,
+        name: data.categoryName,
+        color: isEtc ? Colors.grey : palette[i % palette.length],
+        value: data.amount.toDouble(),
+        percent: data.percent,
       ));
     }
 
@@ -95,20 +67,7 @@ class CategoryPieTop5 extends ConsumerWidget {
               centerSpaceRadius: 40,
               sectionsSpace: 2,
               borderData: FlBorderData(show: false),
-              sections: total == 0
-                  ? [
-                      PieChartSectionData(
-                        value: 1,
-                        title: '0%',
-                        radius: 60,
-                        color: Colors.grey,
-                        titleStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      )
-                    ]
-                  : slices.map((slice) => _buildSection(slice)).toList(),
+              sections: slices.map((slice) => _buildSection(slice)).toList(),
             ),
           ),
         ),
@@ -149,6 +108,38 @@ class CategoryPieTop5 extends ConsumerWidget {
             )
           : null,
       badgePositionPercentageOffset: 1.3,
+    );
+  }
+
+  Widget _buildEmptyChart() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AspectRatio(
+          aspectRatio: 1.6,
+          child: PieChart(
+            PieChartData(
+              centerSpaceRadius: 40,
+              sectionsSpace: 2,
+              borderData: FlBorderData(show: false),
+              sections: [
+                PieChartSectionData(
+                  value: 1,
+                  title: '0%',
+                  radius: 60,
+                  color: Colors.grey,
+                  titleStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        const _LegendList(slices: []),
+      ],
     );
   }
 }

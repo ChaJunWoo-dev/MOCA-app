@@ -6,6 +6,7 @@ import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/providers/expense/expense_read_provider.dart';
 import 'package:prob/services/budget_validation_service.dart';
+import 'package:prob/services/expense_summary_service.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/common/button.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -35,9 +36,10 @@ class _BudgetWidgetState extends State<BudgetWidget> {
 
   Future<void> onSetBudget(WidgetRef ref) async {
     FocusScope.of(context).unfocus();
-    
-    final validationResult = BudgetValidationService.validateBudget(budgetController.text);
-    
+
+    final validationResult =
+        BudgetValidationService.validateBudget(budgetController.text);
+
     if (!validationResult.isValid) {
       showTopSnackBar(
         Overlay.of(context),
@@ -128,25 +130,15 @@ class _BudgetWidgetState extends State<BudgetWidget> {
 class _ExpenseSummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final now = DateTime.now();
-    final nextMonthStart = DateTime(now.year, now.month + 1, 1);
-    final last3MonthsStart = DateTime(now.year, now.month - 2, 1);
-    final totals3Month = ref.watch(totalRangeMonthProvider((
-      startDate: last3MonthsStart,
-      endDate: nextMonthStart,
-    )));
+    final dateRange = ExpenseSummaryService.getThreeMonthRange();
+    final totals3Month = ref.watch(totalRangeMonthProvider(dateRange));
 
     return totals3Month.when(
       loading: () => const CircularProgressIndicator(),
       error: (err, stack) => const Center(child: Text('데이터를 가져오지 못했어요')),
       data: (monthlyTotals) {
-        final values = monthlyTotals.length >= 3
-            ? monthlyTotals
-            : List<int>.filled(3 - monthlyTotals.length, 0) + monthlyTotals;
-
-        final lastMonthTotal = values[1];
-        final avg3MonthTotal =
-            ((values[0] + values[1] + values[2]) / 3).round();
+        final summaryData =
+            ExpenseSummaryService.processMonthlyTotals(monthlyTotals);
 
         return Container(
           decoration: BoxDecoration(
@@ -158,12 +150,12 @@ class _ExpenseSummaryCard extends ConsumerWidget {
               children: [
                 _SummaryRow(
                   title: '지난 달 지출',
-                  expenseTotal: lastMonthTotal,
+                  expenseTotal: summaryData.lastMonthTotal,
                 ),
                 const SizedBox(height: 7),
                 _SummaryRow(
                   title: '최근 3개월 평균 지출',
-                  expenseTotal: avg3MonthTotal,
+                  expenseTotal: summaryData.threeMonthAverage,
                 ),
               ],
             ),
