@@ -76,6 +76,18 @@ class ExpenseRepository {
     return query.get();
   }
 
+  Stream<List<Expense>> watchExpensesInRange(DateTime start, DateTime end) {
+    final query = (db.select(db.expenses)
+      ..where((expense) =>
+          expense.date.isBiggerOrEqualValue(start) &
+          expense.date.isSmallerThanValue(end))
+      ..orderBy([
+        (expense) => OrderingTerm.desc(expense.date),
+        (expense) => OrderingTerm.desc(expense.id),
+      ]));
+    return query.watch();
+  }
+
   Stream<List<int>> getRangeMonthsTotal(DateRange dateRange) {
     DateTime initMonth(DateTime date) => DateTime(
           date.year,
