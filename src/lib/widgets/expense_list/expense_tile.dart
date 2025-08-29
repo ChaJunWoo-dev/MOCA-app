@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
+import 'package:prob/providers/category/category_provider.dart';
 import 'package:prob/screens/add_expense_screen.dart';
 import 'package:prob/utils/icon_mapper.dart';
 import 'package:prob/utils/money_format.dart';
 
-class ExpenseTile extends StatelessWidget {
+class ExpenseTile extends ConsumerWidget {
   final Expense expense;
 
   const ExpenseTile({
@@ -14,7 +16,9 @@ class ExpenseTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categoryAsync =
+        ref.watch(categoryBySlugProvider(expense.categorySlug ?? ''));
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -37,8 +41,14 @@ class ExpenseTile extends StatelessWidget {
                     color: Colors.grey.shade200,
                     shape: BoxShape.circle,
                   ),
-                  child: FaIcon(categoryIconMap[expense.categorySlug],
-                      color: Colors.blue.shade300, size: 20),
+                  child: categoryAsync.when(
+                    loading: () => const SizedBox(width: 20, height: 20),
+                    error: (_, __) => const SizedBox(width: 20, height: 20),
+                    data: (category) => category == null
+                        ? const SizedBox(width: 20, height: 20)
+                        : FaIcon(getCategoryIcon(category.icon),
+                            color: Colors.blue.shade300, size: 20),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),

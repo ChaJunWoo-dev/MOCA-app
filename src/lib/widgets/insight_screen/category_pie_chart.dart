@@ -1,10 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:prob/constants/categories_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
+import 'package:prob/providers/category/category_provider.dart';
 import 'package:prob/utils/money_format.dart';
 
-class CategoryPieTop5 extends StatelessWidget {
+class CategoryPieTop5 extends ConsumerWidget {
   final List<Expense> expenses;
   final double smallCutoffPercent;
 
@@ -15,7 +16,19 @@ class CategoryPieTop5 extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categoriesAsync = ref.watch(categoryProvider);
+
+    return categoriesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => const Center(child: Text('오류가 발생했습니다.')),
+      data: (categories) => _buildChart(categories),
+    );
+  }
+
+  Widget _buildChart(List<Category> categories) {
+    final categoryMap = {for (var cat in categories) cat.slug: cat};
+
     Map<String, num> group(List<Expense> expense) {
       final group = <String, num>{};
 
@@ -24,6 +37,7 @@ class CategoryPieTop5 extends StatelessWidget {
 
         group[categorySlug] = (group[categorySlug] ?? 0) + expense.amount;
       }
+
       return group;
     }
 
@@ -38,7 +52,6 @@ class CategoryPieTop5 extends StatelessWidget {
           0,
           (sum, entry) => sum + entry.value,
         );
-
     final palette = [
       Colors.redAccent,
       Colors.blueAccent,
@@ -46,14 +59,12 @@ class CategoryPieTop5 extends StatelessWidget {
       Colors.purple,
       Colors.teal,
     ];
-
     final slices = <_CategorySlice>[];
 
     for (int i = 0; i < top.length; i++) {
       final categoryEntry = top[i];
       final percent = total == 0 ? 0.0 : (categoryEntry.value / total * 100);
-      final name =
-          categoriesData[categoryEntry.key]?['name'] ?? categoryEntry.key;
+      final name = categoryMap[categoryEntry.key]?.name ?? categoryEntry.key;
 
       slices.add(_CategorySlice(
         name: name,

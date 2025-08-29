@@ -1,24 +1,29 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 
-final Map<String, IconData> categoryIconMap = {
-  'food': FontAwesomeIcons.utensils,
-  'cafe': FontAwesomeIcons.mugHot,
-  'alcohol': FontAwesomeIcons.beerMugEmpty,
-  'cart': FontAwesomeIcons.boxOpen,
-  'online_cart': FontAwesomeIcons.bagShopping,
-  'fashion': FontAwesomeIcons.shirt,
-  'beauty': FontAwesomeIcons.pumpSoap,
+final Map<String, IconData> _categoryIconMap = {
+  'utensils': FontAwesomeIcons.utensils,
+  'mugHot': FontAwesomeIcons.mugHot,
+  'beerMugEmpty': FontAwesomeIcons.beerMugEmpty,
+  'boxOpen': FontAwesomeIcons.boxOpen,
+  'bagShopping': FontAwesomeIcons.bagShopping,
+  'shirt': FontAwesomeIcons.shirt,
+  'pumpSoap': FontAwesomeIcons.pumpSoap,
   'bus': FontAwesomeIcons.bus,
   'car': FontAwesomeIcons.car,
   'house': FontAwesomeIcons.house,
-  'health': FontAwesomeIcons.briefcaseMedical,
-  'finance': FontAwesomeIcons.wallet,
-  'leisure': FontAwesomeIcons.film,
-  'travel': FontAwesomeIcons.plane,
-  'education': FontAwesomeIcons.graduationCap,
-  'childcare': FontAwesomeIcons.baby,
-  'pet': FontAwesomeIcons.paw,
+  'briefcaseMedical': FontAwesomeIcons.briefcaseMedical,
+  'wallet': FontAwesomeIcons.wallet,
+  'film': FontAwesomeIcons.film,
+  'plane': FontAwesomeIcons.plane,
+  'graduationCap': FontAwesomeIcons.graduationCap,
+  'baby': FontAwesomeIcons.baby,
+  'paw': FontAwesomeIcons.paw,
   'gift': FontAwesomeIcons.gift,
-  'transfer': FontAwesomeIcons.rightLeft,
+  'faRightLeft': FontAwesomeIcons.rightLeft,
+  'rightLeft': FontAwesomeIcons.rightLeft,
 };
+
+IconData getCategoryIcon(String? iconName) {
+  return _categoryIconMap[iconName] ?? FontAwesomeIcons.circle;
+}

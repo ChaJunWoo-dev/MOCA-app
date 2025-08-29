@@ -55,7 +55,7 @@ class _State extends ConsumerState<CategorySelectSheet> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    categoryIconMap[category.slug],
+                    getCategoryIcon(category.icon),
                     size: 28,
                     color: Colors.blue,
                   ),
