@@ -75,48 +75,62 @@ class _State extends ConsumerState<AddExpenseScreen> {
     setState(() => selectedDate = newDate);
   }
 
-  Future<void> _create() async {
+  ({int? amount, String? error}) _validateInput() {
     final digits = toNumericString(amountCtrl.text.trim());
     final amount = int.tryParse(digits) ?? 0;
 
     if (amount <= 0) {
-      showTopSnackBar(
-        Overlay.of(context),
-        const CustomSnackBar.error(message: '금액을 입력하세요'),
-      );
-
-      return;
+      return (amount: null, error: '금액을 입력하세요');
     }
 
-    if (vendorCtrl.text.trim() == '') {
-      showTopSnackBar(
-        Overlay.of(context),
-        const CustomSnackBar.error(message: '거래처 명을 입력하세요'),
-      );
+    if (vendorCtrl.text.trim().isEmpty) {
+      return (amount: null, error: '거래처 명을 입력하세요');
+    }
+
+    return (amount: amount, error: null);
+  }
+
+  ExpensesCompanion _createExpenseCompanion(int amount) {
+    return ExpensesCompanion(
+      date: Value(selectedDate),
+      amount: Value(amount),
+      vendor: Value(vendorCtrl.text),
+      categorySlug: Value(selectedCategory?.slug),
+      memo: Value(memoCtrl.text),
+    );
+  }
+
+  void _showSuccessAndClose(String message) {
+    if (!mounted) return;
+
+    showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.success(message: message),
+    );
+    Navigator.pop(context);
+  }
+
+  void _showError(String message) {
+    showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.error(message: message),
+    );
+  }
+
+  Future<void> _create() async {
+    final validation = _validateInput();
+
+    if (validation.error != null) {
+      _showError(validation.error!);
 
       return;
     }
 
     final expenseNotifier = ref.read(expenseWriteProvider.notifier);
 
-    await expenseNotifier.save(
-      ExpensesCompanion(
-        date: Value(selectedDate),
-        amount: Value(amount),
-        vendor: Value(vendorCtrl.text),
-        categorySlug: Value(selectedCategory?.slug),
-        memo: Value(memoCtrl.text),
-      ),
-    );
+    await expenseNotifier.save(_createExpenseCompanion(validation.amount!));
 
-    if (!mounted) return;
-
-    showTopSnackBar(
-      Overlay.of(context),
-      const CustomSnackBar.success(message: '저장했어요'),
-    );
-
-    Navigator.pop(context);
+    _showSuccessAndClose('저장했어요');
   }
 
   Future<void> _update() async {
@@ -124,41 +138,20 @@ class _State extends ConsumerState<AddExpenseScreen> {
 
     if (current == null) return;
 
-    final digits = toNumericString(amountCtrl.text.trim());
-    final amount = int.tryParse(digits) ?? 0;
+    final validation = _validateInput();
 
-    if (amount <= 0) {
-      showTopSnackBar(Overlay.of(context),
-          const CustomSnackBar.error(message: '금액을 입력하세요'));
-
-      return;
-    }
-
-    if (vendorCtrl.text.trim().isEmpty) {
-      showTopSnackBar(Overlay.of(context),
-          const CustomSnackBar.error(message: '거래처 명을 입력하세요'));
+    if (validation.error != null) {
+      _showError(validation.error!);
 
       return;
     }
 
     await ref.read(expenseRepositoryProvider).updateExpenseById(
           current.id,
-          ExpensesCompanion(
-            date: Value(selectedDate),
-            amount: Value(amount),
-            vendor: Value(vendorCtrl.text),
-            categorySlug: Value(selectedCategory?.slug),
-            memo: Value(memoCtrl.text),
-          ),
+          _createExpenseCompanion(validation.amount!),
         );
 
-    if (!mounted) return;
-
-    showTopSnackBar(
-      Overlay.of(context),
-      const CustomSnackBar.success(message: '수정했어요'),
-    );
-    Navigator.pop(context);
+    _showSuccessAndClose('수정했어요');
   }
 
   Future<void> _delete() async {
