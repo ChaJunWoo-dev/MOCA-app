@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:prob/db/database.dart';
+import 'package:prob/utils/date_utils.dart';
 
 class DailyExpenseChart extends StatelessWidget {
   final List<Expense> expenses;
@@ -12,8 +13,7 @@ class DailyExpenseChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final today = AppDateUtils.getToday();
     final start = today.subtract(const Duration(days: 13));
     final end = today.add(const Duration(days: 1));
     final totalsWon = List<int>.filled(14, 0);

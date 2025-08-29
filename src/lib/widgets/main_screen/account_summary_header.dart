@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/providers/expense/expense_provider.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:prob/utils/money_format.dart';
 
 class AccountSummaryHeader extends ConsumerWidget {
@@ -14,7 +15,7 @@ class AccountSummaryHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
-    final monthKey = DateTime(now.year, now.month, 1);
+    final monthKey = AppDateUtils.getMonthStart(now);
     final monthlyTotal = ref.watch(monthlyTotalProvider(monthKey));
 
     return monthlyTotal.when(

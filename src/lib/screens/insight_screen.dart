@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/expense/expense_provider.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:prob/widgets/common/app_speed_dial.dart';
 import 'package:prob/widgets/common/my_app_bar.dart';
 import 'package:prob/widgets/insight_screen/category_pie_chart.dart';
@@ -25,8 +26,8 @@ class InsightScreen extends ConsumerWidget {
         error: (err, _) => const Center(child: Text('데이터를 가져오는 데 실패했어요')),
         data: (List<Expense> expenses) {
           final now = DateTime.now();
-          final start = DateTime(now.year, now.month, 1);
-          final end = DateTime(now.year, now.month + 1, 1);
+          final start = AppDateUtils.getMonthStart(now);
+          final end = AppDateUtils.getNextMonthStart(now);
           final thisMonth = expenses
               .where(
                 (expense) =>

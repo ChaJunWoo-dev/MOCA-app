@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 final kEvents = LinkedHashMap<DateTime, List<ExpenseModel>>(
@@ -21,5 +22,5 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
 }
 
 final kToday = DateTime.now();
-final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
-final kLastDay = DateTime(kToday.year, kToday.month, kToday.day);
+final kFirstDay = AppDateUtils.getUiDateLimit();
+final kLastDay = AppDateUtils.getToday();

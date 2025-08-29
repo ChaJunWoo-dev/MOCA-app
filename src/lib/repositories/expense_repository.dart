@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/models/expense_model.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:prob/utils/type.dart';
 
 class ExpenseRepository {
@@ -8,7 +9,6 @@ class ExpenseRepository {
 
   ExpenseRepository(this.db);
 
-  // write
   Future<void> insertExpense(ExpensesCompanion data) =>
       db.into(db.expenses).insert((data));
 
@@ -32,10 +32,9 @@ class ExpenseRepository {
     });
   }
 
-  // read
   Stream<int> getMonthlyExpensesTotal(DateTime date) {
-    final monthStart = DateTime(date.year, date.month, 1);
-    final nextMonthStart = DateTime(date.year, date.month + 1, 1);
+    final monthStart = AppDateUtils.getMonthStart(date);
+    final nextMonthStart = AppDateUtils.getNextMonthStart(date);
 
     final amountSum = db.expenses.amount.sum();
     final query = db.selectOnly(db.expenses)
@@ -49,8 +48,8 @@ class ExpenseRepository {
   }
 
   Stream<List<Expense>> getMonthlyExpenses(DateTime date) {
-    final start = DateTime(date.year, date.month, 1);
-    final end = DateTime(date.year, date.month + 1, 1);
+    final start = AppDateUtils.getMonthStart(date);
+    final end = AppDateUtils.getNextMonthStart(date);
 
     final query = db.select(db.expenses)
       ..where((expense) =>
@@ -89,14 +88,8 @@ class ExpenseRepository {
   }
 
   Stream<List<int>> getRangeMonthsTotal(DateRange dateRange) {
-    DateTime initMonth(DateTime date) => DateTime(
-          date.year,
-          date.month,
-          1,
-        );
-
-    final startMonth = initMonth(dateRange.startDate);
-    final endMonth = initMonth(dateRange.endDate);
+    final startMonth = AppDateUtils.getMonthStart(dateRange.startDate);
+    final endMonth = AppDateUtils.getMonthStart(dateRange.endDate);
     final rowsStream = (db.select(db.expenses)
           ..where((expense) =>
               expense.date.isBiggerOrEqualValue(startMonth) &
@@ -108,16 +101,16 @@ class ExpenseRepository {
 
       for (final row in rows) {
         final date = row.date;
-        final key = DateTime(date.year, date.month, 1);
+        final key = AppDateUtils.getMonthStart(date);
 
         totalsByMonth[key] = (totalsByMonth[key] ?? 0) + row.amount;
       }
 
-      final monthCount = (endMonth.year - startMonth.year) * 12 +
-          (endMonth.month - startMonth.month);
+      final monthCount = AppDateUtils.calculateMonthCount(startMonth, endMonth);
 
       return List.generate(monthCount, (i) {
-        final current = DateTime(startMonth.year, startMonth.month + i, 1);
+        final current = AppDateUtils.getMonthStart(
+            AppDateUtils.addMonths(startMonth, i));
 
         return totalsByMonth[current] ?? 0;
       });

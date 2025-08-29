@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:prob/providers/expense/expense_provider.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/expense_list/expense_tile.dart';
 
@@ -17,7 +18,7 @@ class ExpenseListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final monthStart = DateTime(monthDate.year, monthDate.month, 1);
+    final monthStart = AppDateUtils.getMonthStart(monthDate);
     final groupsValue = ref.watch(dailyGroupsProvider(monthStart));
 
     return groupsValue.when(

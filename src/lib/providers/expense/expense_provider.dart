@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/repository_providers.dart';
 import 'package:prob/repositories/expense_repository.dart';
+import 'package:prob/utils/date_utils.dart';
 import 'package:prob/utils/type.dart';
 
 final monthlyTotalProvider = StreamProvider.family<int, DateTime>((ref, date) {
@@ -63,9 +64,8 @@ final dailyGroupsProvider =
 
 final last3MonthsExpensesProvider = StreamProvider<List<Expense>>((ref) {
   final repo = ref.read(expenseRepositoryProvider);
-  final now = DateTime.now();
-  final start = DateTime(now.year, now.month - 2, 1);
-  final end = DateTime(now.year, now.month + 1, 1);
+  final start = AppDateUtils.getStatisticsStartDate();
+  final end = AppDateUtils.getStatisticsEndDate();
 
   return repo.watchExpensesInRange(start, end);
 });
