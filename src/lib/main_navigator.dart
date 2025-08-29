@@ -9,33 +9,30 @@ class MainNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PersistentTabController controller;
+    final controller = PersistentTabController(initialIndex: 0);
 
-    controller = PersistentTabController(initialIndex: 0);
+    final navigationItems = [
+      (screen: const MainScreen(), icon: Icons.home_rounded),
+      (screen: const InsightScreen(), icon: Icons.insights_rounded),
+      (screen: const BackupScreen(), icon: Icons.cloud_upload_rounded),
+    ];
+
+    PersistentBottomNavBarItem createNavBarItem(IconData icon) {
+      return PersistentBottomNavBarItem(
+        icon: Icon(icon),
+        activeColorPrimary: Colors.blue,
+        inactiveColorPrimary: Colors.grey,
+      );
+    }
 
     List<Widget> buildScreens() {
-      return [
-        const MainScreen(),
-        const InsightScreen(),
-        const BackupScreen(),
-      ];
+      return navigationItems.map((item) => item.screen).toList();
     }
 
     List<PersistentBottomNavBarItem> navBarsItems() {
-      return [
-        PersistentBottomNavBarItem(
-            icon: const Icon(Icons.home_rounded),
-            activeColorPrimary: Colors.blue,
-            inactiveColorPrimary: Colors.grey),
-        PersistentBottomNavBarItem(
-            icon: const Icon(Icons.insights_rounded),
-            activeColorPrimary: Colors.blue,
-            inactiveColorPrimary: Colors.grey),
-        PersistentBottomNavBarItem(
-            icon: const Icon(Icons.cloud_upload_rounded),
-            activeColorPrimary: Colors.blue,
-            inactiveColorPrimary: Colors.grey),
-      ];
+      return navigationItems
+          .map((item) => createNavBarItem(item.icon))
+          .toList();
     }
 
     return BottomNavigator(
