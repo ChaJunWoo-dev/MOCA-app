@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:prob/providers/expense/expense_read_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:prob/utils/money_format.dart';
 import 'package:prob/widgets/expense_list/expense_tile.dart';
 

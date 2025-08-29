@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/category/category_provider.dart';
 import 'package:prob/providers/repository_providers.dart';
-import 'package:prob/providers/expense/expense_write_provider.dart';
+import 'package:prob/providers/expense/expense_provider.dart';
 import 'package:prob/widgets/add_expense_screen/amount_input_field.dart';
 import 'package:prob/widgets/add_expense_screen/category_select_sheet.dart';
 import 'package:prob/widgets/add_expense_screen/date_text.dart';
