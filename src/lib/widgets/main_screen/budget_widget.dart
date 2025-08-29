@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:prob/constants/message_constants.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/budget/budget_provider.dart';
 import 'package:prob/providers/expense/expense_provider.dart';
@@ -64,7 +65,7 @@ class _BudgetWidgetState extends State<BudgetWidget> {
 
     showTopSnackBar(
       Overlay.of(context),
-      const CustomSnackBar.success(message: '예산을 설정했어요.'),
+      const CustomSnackBar.success(message: Messages.budgetSet),
     );
   }
 
@@ -135,7 +136,8 @@ class _ExpenseSummaryCard extends ConsumerWidget {
 
     return totals3Month.when(
       loading: () => const CircularProgressIndicator(),
-      error: (err, stack) => const Center(child: Text('데이터를 가져오지 못했어요')),
+      error: (err, stack) =>
+          const Center(child: Text(Messages.dataFetchFailed)),
       data: (monthlyTotals) {
         final summaryData =
             ExpenseSummaryService.processMonthlyTotals(monthlyTotals);
