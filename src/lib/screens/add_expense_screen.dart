@@ -1,12 +1,11 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prob/constants/message_constants.dart';
 import 'package:prob/db/database.dart';
 import 'package:prob/providers/category/category_provider.dart';
-import 'package:prob/providers/repository_providers.dart';
-import 'package:prob/providers/expense/expense_provider.dart';
+import 'package:prob/services/expense_form_service.dart';
+import 'package:prob/services/expense_form_validator.dart';
 import 'package:prob/widgets/add_expense_screen/amount_input_field.dart';
 import 'package:prob/widgets/add_expense_screen/category_select_sheet.dart';
 import 'package:prob/widgets/add_expense_screen/date_text.dart';
@@ -77,27 +76,9 @@ class _State extends ConsumerState<AddExpenseScreen> {
   }
 
   ({int? amount, String? error}) _validateInput() {
-    final digits = toNumericString(amountCtrl.text.trim());
-    final amount = int.tryParse(digits) ?? 0;
-
-    if (amount <= 0) {
-      return (amount: null, error: Messages.amountRequired);
-    }
-
-    if (vendorCtrl.text.trim().isEmpty) {
-      return (amount: null, error: Messages.vendorRequired);
-    }
-
-    return (amount: amount, error: null);
-  }
-
-  ExpensesCompanion _createExpenseCompanion(int amount) {
-    return ExpensesCompanion(
-      date: Value(selectedDate),
-      amount: Value(amount),
-      vendor: Value(vendorCtrl.text),
-      categorySlug: Value(selectedCategory?.slug),
-      memo: Value(memoCtrl.text),
+    return ExpenseFormValidator.validateExpenseForm(
+      amountText: amountCtrl.text,
+      vendorText: vendorCtrl.text,
     );
   }
 
@@ -123,67 +104,57 @@ class _State extends ConsumerState<AddExpenseScreen> {
 
     if (validation.error != null) {
       _showError(validation.error!);
-
       return;
     }
 
-    final expenseNotifier = ref.read(expenseWriteProvider.notifier);
-
-    await expenseNotifier.save(_createExpenseCompanion(validation.amount!));
+    await ExpenseFormService.createExpense(
+      ref: ref,
+      date: selectedDate,
+      amount: validation.amount!,
+      vendor: vendorCtrl.text,
+      categorySlug: selectedCategory?.slug,
+      memo: memoCtrl.text,
+    );
 
     _showSuccessAndClose(Messages.expenseSaved);
   }
 
   Future<void> _update() async {
     final current = widget.initialExpense;
-
     if (current == null) return;
 
     final validation = _validateInput();
-
     if (validation.error != null) {
       _showError(validation.error!);
-
       return;
     }
 
-    await ref.read(expenseRepositoryProvider).updateExpenseById(
-          current.id,
-          _createExpenseCompanion(validation.amount!),
-        );
+    await ExpenseFormService.updateExpense(
+      ref: ref,
+      expenseId: current.id,
+      date: selectedDate,
+      amount: validation.amount!,
+      vendor: vendorCtrl.text,
+      categorySlug: selectedCategory?.slug,
+      memo: memoCtrl.text,
+    );
 
     _showSuccessAndClose(Messages.expenseUpdated);
   }
 
   Future<void> _delete() async {
     final current = widget.initialExpense;
-
     if (current == null) return;
 
-    final result = await showOkCancelAlertDialog(
+    final deleted = await ExpenseFormService.deleteExpense(
       context: context,
-      title: Messages.deleteConfirmTitle,
-      message:
-          '${current.vendor} • ${toCurrencyString(current.amount.toString(), mantissaLength: 0)}원',
-      okLabel: '삭제',
-      cancelLabel: '취소',
-      isDestructiveAction: true,
-      barrierDismissible: true,
+      ref: ref,
+      expense: current,
     );
 
-    final ok = result == OkCancelResult.ok;
-
-    if (ok != true) return;
-
-    await ref.read(expenseRepositoryProvider).deleteExpenseById(current.id);
-
-    if (!mounted) return;
-
-    showTopSnackBar(
-      Overlay.of(context),
-      const CustomSnackBar.success(message: Messages.expenseDeleted),
-    );
-    Navigator.pop(context);
+    if (deleted && mounted) {
+      _showSuccessAndClose(Messages.expenseDeleted);
+    }
   }
 
   @override
